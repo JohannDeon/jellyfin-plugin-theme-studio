@@ -54,6 +54,8 @@ En haut de la page d'accueil, une grande image plein écran fait défiler les fi
 logo ou titre, note, année, genres, résumé, progression, et les boutons **Lecture / Reprendre** et **Plus d'infos**.
 Elle défile toute seule (pause au survol), avec des flèches et des points pour naviguer.
 
+- **Bande-annonce** : après quelques secondes, la bande-annonce YouTube remplace l'image, sans le son (bouton pour l'activer). Désactivée sur mobile, en mode économie de données et si les animations sont réduites.
+- **Ma liste** : le bouton ＋ ajoute le titre à tes favoris (la série entière pour un épisode).
 - Admin : **Réglages → Page d'accueil** pour l'activer ou non et choisir son contenu (à reprendre + nouveautés, seulement l'un ou l'autre).
 - Utilisateur : **Personnaliser → Page d'accueil** pour l'afficher ou la masquer pour soi.
 
@@ -61,7 +63,12 @@ Elle défile toute seule (pause au survol), avec des flèches et des points pour
 
 ## Thèmes inclus
 
-Jellyfin (d'origine), Minuit, Noir OLED, Aurore, Braise, Océan, Rosé, Ardoise.
+Jellyfin (d'origine), Cinéma, Verre, Galaxie, Minuit, Noir OLED, Aurore, Braise, Océan, Rosé, Ardoise.
+
+Dès qu'un thème est actif, l'interface prend aussi un style plus moderne : cartes qui se soulèvent au survol, titres de rangées plus marqués, fiches avec affiche en relief, boutons ronds et genres en pastilles.
+
+## Compatibilité
+- **Genre Collections** : compatible. La bannière reste tout en haut, et les rangées de Genre Collections prennent automatiquement le style du thème.
 
 ## Comment ça marche
 

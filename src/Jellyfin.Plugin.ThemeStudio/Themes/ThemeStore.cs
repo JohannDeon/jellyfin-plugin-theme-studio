@@ -34,6 +34,7 @@ public class ThemeStore
             ShowHeaderButton = config.ShowHeaderButton,
             ShowHomeHero = config.ShowHomeHero,
             HomeHeroSource = NormalizeHeroSource(config.HomeHeroSource),
+            HomeHeroTrailers = config.HomeHeroTrailers,
             DefaultSelection = ThemeJson.TryDeserialize<ThemeSelection>(config.DefaultSelectionJson) ?? new ThemeSelection(),
             CustomThemes = ThemeJson.TryDeserialize<List<ThemeDefinition>>(config.CustomThemesJson) ?? new List<ThemeDefinition>(),
         };
@@ -47,6 +48,7 @@ public class ThemeStore
         config.ShowHeaderButton = settings.ShowHeaderButton;
         config.ShowHomeHero = settings.ShowHomeHero;
         config.HomeHeroSource = NormalizeHeroSource(settings.HomeHeroSource);
+        config.HomeHeroTrailers = settings.HomeHeroTrailers;
         config.DefaultSelectionJson = ThemeJson.Serialize(settings.DefaultSelection ?? new ThemeSelection());
         var custom = (settings.CustomThemes ?? new List<ThemeDefinition>())
             .Select(t =>
@@ -121,6 +123,9 @@ public sealed class ServerSettings
 
     /// <summary>Gets or sets what the banner shows: "mixed" (resume then new), "resume" or "latest".</summary>
     public string HomeHeroSource { get; set; } = "mixed";
+
+    /// <summary>Gets or sets a value indicating whether muted YouTube trailers play in the banner.</summary>
+    public bool HomeHeroTrailers { get; set; } = true;
 
     public ThemeSelection? DefaultSelection { get; set; } = new();
 

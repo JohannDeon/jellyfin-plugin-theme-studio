@@ -71,6 +71,7 @@ public class ThemeStudioController : ControllerBase
             ShowHeaderButton = settings.ShowHeaderButton,
             ShowHomeHero = settings.ShowHomeHero,
             HomeHeroSource = settings.HomeHeroSource,
+            HomeHeroTrailers = settings.HomeHeroTrailers,
             IsAdmin = User.IsInRole("Administrator"),
             Version = typeof(Plugin).Assembly.GetName().Version?.ToString() ?? "0",
         });
@@ -182,6 +183,8 @@ public sealed class BootstrapResponse
     public bool ShowHomeHero { get; set; }
 
     public string HomeHeroSource { get; set; } = "mixed";
+
+    public bool HomeHeroTrailers { get; set; } = true;
 
     public bool IsAdmin { get; set; }
 
