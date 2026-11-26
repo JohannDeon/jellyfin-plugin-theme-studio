@@ -9,6 +9,22 @@
     "imageUrl": "https://raw.githubusercontent.com/JohannDeon/jellyfin-plugin-theme-studio/main/assets/thumb.png",
     "versions": [
       {
+        "version": "1.4.3.12",
+        "changelog": "https://github.com/JohannDeon/jellyfin-plugin-theme-studio/releases/tag/v1.4.3",
+        "targetAbi": "12.0.0.0",
+        "sourceUrl": "https://github.com/JohannDeon/jellyfin-plugin-theme-studio/releases/download/v1.4.3/theme-studio_1.4.3.12.zip",
+        "checksum": "90f7354676659a87227ecf5d030b369e",
+        "timestamp": "2026-11-26T17:17:38Z"
+      },
+      {
+        "version": "1.4.3.11",
+        "changelog": "https://github.com/JohannDeon/jellyfin-plugin-theme-studio/releases/tag/v1.4.3",
+        "targetAbi": "10.11.0.0",
+        "sourceUrl": "https://github.com/JohannDeon/jellyfin-plugin-theme-studio/releases/download/v1.4.3/theme-studio_1.4.3.11.zip",
+        "checksum": "ced79b61551ada9e8ffef5449d605c7a",
+        "timestamp": "2026-11-26T17:17:38Z"
+      },
+      {
         "version": "1.4.2.12",
         "changelog": "https://github.com/JohannDeon/jellyfin-plugin-theme-studio/releases/tag/v1.4.2",
         "targetAbi": "12.0.0.0",
