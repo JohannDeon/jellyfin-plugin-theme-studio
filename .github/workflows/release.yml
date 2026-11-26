@@ -1,0 +1,108 @@
+name: Release
+
+# Publishes a release (and updates manifest.json) whenever the version in the
+# .csproj changes on main. Bump <PluginVersion> to ship a new version.
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/**'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            9.0.x
+            10.0.x
+
+      - name: Read version
+        id: v
+        run: |
+          csproj=src/Jellyfin.Plugin.ThemeStudio/Jellyfin.Plugin.ThemeStudio.csproj
+          version=$(grep -oPm1 '(?<=<PluginVersion>)[^<]+' "$csproj")
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          if git ls-remote --exit-code --tags origin "refs/tags/v$version" >/dev/null; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Test
+        if: steps.v.outputs.exists == 'false'
+        run: dotnet test --configuration Release
+
+      # One package per Jellyfin generation. Jellyfin only offers the builds whose
+      # targetAbi is <= its own version, and picks the highest version among them.
+      - name: Build packages
+        if: steps.v.outputs.exists == 'false'
+        env:
+          VERSION: ${{ steps.v.outputs.version }}
+        run: |
+          set -e
+          echo "[]" > builds.json
+          for tf in net9.0 net10.0; do
+            out="out/$tf"
+            dotnet publish src/Jellyfin.Plugin.ThemeStudio --configuration Release --framework "$tf" --output "$out"
+            abi=$(dotnet msbuild src/Jellyfin.Plugin.ThemeStudio -getProperty:JellyfinVersion -p:TargetFramework=$tf)
+            full=$(dotnet msbuild src/Jellyfin.Plugin.ThemeStudio -getProperty:AssemblyVersion -p:TargetFramework=$tf)
+            zip="theme-studio_${full}.zip"
+            (cd "$out" && zip -j "../../$zip" Jellyfin.Plugin.ThemeStudio.dll)
+            md5=$(md5sum "$zip" | cut -d' ' -f1)
+            python3 -c "import json,sys; d=json.load(open('builds.json')); d.append(dict(version='$full', abi='$abi.0', zip='$zip', md5='$md5')); json.dump(d, open('builds.json','w'))"
+          done
+          cat builds.json
+
+      - name: Create GitHub release
+        if: steps.v.outputs.exists == 'false'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "v${{ steps.v.outputs.version }}" theme-studio_*.zip \
+            --title "Theme Studio ${{ steps.v.outputs.version }}" \
+            --generate-notes
+
+      - name: Update manifest.json
+        if: steps.v.outputs.exists == 'false'
+        env:
+          TAG: v${{ steps.v.outputs.version }}
+          REPO: ${{ github.repository }}
+        run: |
+          python3 - <<'PY'
+          import json, os, datetime
+          path = "manifest.json"
+          data = json.load(open(path, encoding="utf-8"))
+          builds = json.load(open("builds.json"))
+          now = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+          tag, repo = os.environ["TAG"], os.environ["REPO"]
+          new = [{
+              "version": b["version"],
+              "changelog": f"https://github.com/{repo}/releases/tag/{tag}",
+              "targetAbi": b["abi"],
+              "sourceUrl": f"https://github.com/{repo}/releases/download/{tag}/{b['zip']}",
+              "checksum": b["md5"],
+              "timestamp": now,
+          } for b in sorted(builds, key=lambda b: b["version"], reverse=True)]
+          plugin = data[0]
+          known = {b["version"] for b in new}
+          plugin["versions"] = new + [v for v in plugin.get("versions", []) if v["version"] not in known]
+          with open(path, "w", encoding="utf-8") as f:
+              json.dump(data, f, ensure_ascii=False, indent=2)
+              f.write("\n")
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add manifest.json
+          git commit -m "Publish Theme Studio ${{ steps.v.outputs.version }} in manifest.json"
+          git push

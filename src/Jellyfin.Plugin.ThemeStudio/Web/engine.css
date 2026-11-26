@@ -1,0 +1,171 @@
+/* Theme Studio engine: maps the --ts-* design tokens onto Jellyfin Web.
+   Tokens: --ts-accent --ts-bg --ts-surface --ts-text --ts-text-2 --ts-radius --ts-blur --ts-font --ts-bg-image */
+:root {
+  --ts-surface-2: color-mix(in srgb, var(--ts-surface) 80%, var(--ts-text) 8%);
+  --ts-border: color-mix(in srgb, var(--ts-text) 12%, transparent);
+  --ts-accent-soft: color-mix(in srgb, var(--ts-accent) 22%, transparent);
+  --ts-glass: color-mix(in srgb, var(--ts-surface) 72%, transparent);
+  --ts-radius-sm: calc(var(--ts-radius) * 0.6);
+}
+
+/* ---------- Base ---------- */
+html, body, .backgroundContainer, .layout-desktop, .layout-tv, .layout-mobile {
+  background-color: var(--ts-bg) !important;
+  color: var(--ts-text) !important;
+}
+body, .emby-button, .emby-input, .emby-select, .emby-textarea, .button-flat, h1, h2, h3, .sectionTitle, .cardText {
+  font-family: var(--ts-font, "Noto Sans"), "Noto Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif !important;
+}
+.backgroundContainer {
+  /* --ts-bg-image already contains the darkening gradient; it is only defined when an image is set */
+  background-image: var(--ts-bg-image, none) !important;
+  background-size: cover !important;
+  background-position: center !important;
+  background-attachment: fixed !important;
+}
+.backgroundContainer.withBackdrop { background-color: color-mix(in srgb, var(--ts-bg) 80%, transparent) !important; }
+.secondaryText, .fieldDescription, .listItemBodyText.secondary, .cardText-secondary, .itemMiscInfo, .mediaInfoItem, .textActionButton .secondary {
+  color: var(--ts-text-2) !important;
+}
+a:not(.emby-button):not(.cardImageContainer):not(.navMenuOption), .button-link { color: var(--ts-accent) !important; }
+::selection { background: var(--ts-accent-soft); }
+
+/* ---------- Header & drawer (glass) ---------- */
+.skinHeader.skinHeader-withBackground, .skinHeader.semiTransparent, .skinHeader-blurred {
+  background: var(--ts-glass) !important;
+  -webkit-backdrop-filter: blur(var(--ts-blur)) saturate(1.4);
+  backdrop-filter: blur(var(--ts-blur)) saturate(1.4);
+  border-bottom: 1px solid var(--ts-border);
+}
+.mainDrawer, .MuiDrawer-paper, .mainDrawer-scrollContainer {
+  background: var(--ts-glass) !important;
+  -webkit-backdrop-filter: blur(var(--ts-blur));
+  backdrop-filter: blur(var(--ts-blur));
+  color: var(--ts-text) !important;
+}
+.navMenuOption { border-radius: var(--ts-radius-sm) !important; margin: 2px 8px !important; }
+.navMenuOption:hover { background: color-mix(in srgb, var(--ts-text) 8%, transparent) !important; }
+.navMenuOption-selected, .navMenuOption-selected:hover {
+  background: var(--ts-accent-soft) !important;
+  color: var(--ts-text) !important;
+}
+.navMenuOption-selected .navMenuOptionIcon { color: var(--ts-accent) !important; }
+
+/* ---------- Tabs ---------- */
+.emby-tab-button { border-radius: 999px !important; }
+.emby-tab-button-active, .emby-tab-button.emby-button-foreground, .emby-tab-button.emby-tab-button-active {
+  color: var(--ts-accent) !important;
+}
+.emby-tab-button-active::after, .emby-tab-button-selection-bar { background: var(--ts-accent) !important; }
+
+/* ---------- Cards ---------- */
+.cardScalable, .cardImageContainer, .cardImage, .cardOverlayContainer, .cardContent, .cardContent-button,
+.visualCardBox, .itemDetailImage, .detailImageContainer .card, .chapterThumbContainer, .listItemImage {
+  border-radius: var(--ts-radius) !important;
+}
+.visualCardBox { overflow: hidden; }
+.visualCardBox, .cardBox-bottompadded.visualCardBox { background: var(--ts-surface) !important; border: 1px solid var(--ts-border); }
+.card:focus .cardBox.visualCardBox, .card:focus .cardBox:not(.visualCardBox) .cardScalable,
+.card.show-focus:focus .cardBox { outline: 3px solid var(--ts-accent) !important; outline-offset: 2px; border: 0 !important; }
+.cardImageContainer.defaultCardBackground, .defaultCardBackground { background-color: var(--ts-surface-2) !important; }
+.cardIndicators .countIndicator, .playedIndicator, .indicator, .countIndicator, .fullSyncIndicator {
+  background: var(--ts-accent) !important;
+  color: var(--ts-bg) !important;
+}
+.itemProgressBarForeground, .itemProgressBar > div, .progressring-spiner, .mdl-slider-background-lower, .emby-slider-background-lower {
+  background-color: var(--ts-accent) !important;
+}
+.itemProgressBar { background: color-mix(in srgb, var(--ts-text) 18%, transparent) !important; border-radius: 999px; overflow: hidden; }
+
+/* ---------- Buttons ---------- */
+.emby-button, .raised, .fab, .detailButton, .button-flat, .paper-icon-button-light { border-radius: var(--ts-radius-sm) !important; }
+.raised, .emby-button.raised, .emby-select-withcolor, .button-alt {
+  background: var(--ts-surface-2) !important;
+  color: var(--ts-text) !important;
+  border: 1px solid var(--ts-border) !important;
+}
+.button-submit, .emby-button.button-submit, .raised.button-submit, .btnPlay.detailButton, .fab {
+  background: var(--ts-accent) !important;
+  color: var(--ts-bg) !important;
+  border-color: transparent !important;
+}
+.button-submit:hover, .emby-button.button-submit:hover { filter: brightness(1.1); }
+.paper-icon-button-light:hover { color: var(--ts-accent) !important; background: transparent !important; }
+.detailButton { background: var(--ts-surface-2) !important; }
+.emby-button:focus, .paper-icon-button-light:focus { box-shadow: 0 0 0 2px var(--ts-accent) !important; }
+
+/* ---------- Forms ---------- */
+.emby-input, .emby-textarea, .emby-select, .emby-select-withcolor, .searchFields .emby-input {
+  background: var(--ts-surface) !important;
+  color: var(--ts-text) !important;
+  border: 1px solid var(--ts-border) !important;
+  border-radius: var(--ts-radius-sm) !important;
+}
+.emby-input:focus, .emby-textarea:focus, .emby-select:focus, .emby-select-withcolor:focus {
+  border-color: var(--ts-accent) !important;
+  box-shadow: 0 0 0 3px var(--ts-accent-soft) !important;
+}
+.inputLabelFocused, .selectLabelFocused, .textareaLabelFocused { color: var(--ts-accent) !important; }
+.emby-checkbox:checked + span + .checkboxOutline, .emby-checkbox:checked + span + span + .checkboxOutline {
+  background-color: var(--ts-accent) !important;
+  border-color: var(--ts-accent) !important;
+}
+.emby-checkbox:focus + span + .checkboxOutline { border-color: var(--ts-accent) !important; }
+.mdl-switch__input:checked + .mdl-switch__label + .mdl-switch__track, .mdl-switch.is-checked .mdl-switch__track { background: var(--ts-accent-soft) !important; }
+.mdl-switch.is-checked .mdl-switch__thumb, .mdl-switch__input:checked ~ .mdl-switch__thumb { background: var(--ts-accent) !important; }
+.mdl-radio__button:checked + .mdl-radio__label + .mdl-radio__outer-circle { border-color: var(--ts-accent) !important; }
+.mdl-radio__button:checked + .mdl-radio__label + .mdl-radio__outer-circle + .mdl-radio__inner-circle { background: var(--ts-accent) !important; }
+.sliderBubble { background: var(--ts-accent) !important; color: var(--ts-bg) !important; }
+
+/* ---------- Surfaces: dialogs, lists, panels ---------- */
+.dialog, .formDialog, .actionSheet, .dialogContainer .dialog, .MuiPaper-root.MuiMenu-paper, .toast {
+  background: var(--ts-glass) !important;
+  -webkit-backdrop-filter: blur(calc(var(--ts-blur) + 8px));
+  backdrop-filter: blur(calc(var(--ts-blur) + 8px));
+  color: var(--ts-text) !important;
+  border: 1px solid var(--ts-border);
+  border-radius: var(--ts-radius) !important;
+}
+.formDialogHeader, .formDialogFooter { background: transparent !important; border-color: var(--ts-border) !important; }
+.paperList, .collapseContent, .readOnlyContent, .verticalSection-extrabottompadding .paperList {
+  background: var(--ts-surface) !important;
+  border-radius: var(--ts-radius) !important;
+  border: 1px solid var(--ts-border);
+}
+.listItem-border, .listItem { border-color: var(--ts-border) !important; }
+.listItem:hover, .actionSheetMenuItem:hover { background: color-mix(in srgb, var(--ts-text) 6%, transparent) !important; }
+.actionSheetMenuItem { border-radius: var(--ts-radius-sm) !important; }
+
+/* ---------- Item details ---------- */
+.detailRibbon, .layout-desktop .detailRibbon {
+  background: color-mix(in srgb, var(--ts-bg) 78%, transparent) !important;
+  -webkit-backdrop-filter: blur(var(--ts-blur));
+  backdrop-filter: blur(var(--ts-blur));
+}
+.itemBackdrop::after, .detailPageWrapperContainer, .detailPagePrimaryContainer { background-color: transparent; }
+.detailPageContent, .itemDetailPage .detailPageWrapperContainer { background: var(--ts-bg); }
+
+/* ---------- Video OSD ---------- */
+.videoOsdBottom, .nowPlayingBar {
+  background: var(--ts-glass) !important;
+  -webkit-backdrop-filter: blur(var(--ts-blur));
+  backdrop-filter: blur(var(--ts-blur));
+}
+.nowPlayingBar { border-top: 1px solid var(--ts-border); }
+
+/* ---------- Login ---------- */
+#loginPage .padded-left, .manualLoginForm, .readOnlyContent, .visualLoginForm {
+  border-radius: var(--ts-radius) !important;
+}
+#loginPage .manualLoginForm {
+  background: var(--ts-glass);
+  -webkit-backdrop-filter: blur(var(--ts-blur));
+  backdrop-filter: blur(var(--ts-blur));
+  padding: 1.5em;
+  border: 1px solid var(--ts-border);
+}
+
+/* ---------- Scrollbars ---------- */
+* { scrollbar-color: color-mix(in srgb, var(--ts-text) 25%, transparent) transparent; }
+::-webkit-scrollbar-thumb { background: color-mix(in srgb, var(--ts-text) 25%, transparent); border-radius: 999px; }
+::-webkit-scrollbar-thumb:hover { background: var(--ts-accent); }

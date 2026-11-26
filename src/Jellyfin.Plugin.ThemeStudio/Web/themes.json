@@ -1,0 +1,68 @@
+[
+  {
+    "id": "jellyfin",
+    "name": "Jellyfin",
+    "author": "Jellyfin",
+    "description": "Le look d'origine, sans modification.",
+    "tags": ["sombre", "origine"],
+    "stock": true,
+    "tokens": { "accent": "#00a4dc", "background": "#101010", "surface": "#202020", "text": "#ffffff", "textSecondary": "#b3b3b3", "radius": 4, "blur": 0, "font": "", "backgroundDim": 60 }
+  },
+  {
+    "id": "minuit",
+    "name": "Minuit",
+    "author": "Theme Studio",
+    "description": "Bleu nuit profond avec un accent violet et des panneaux en verre.",
+    "tags": ["sombre", "verre", "violet"],
+    "tokens": { "accent": "#8b5cf6", "background": "#0b1020", "surface": "#151b30", "text": "#eef1ff", "textSecondary": "#9aa3c7", "radius": 14, "blur": 18, "font": "", "backgroundDim": 70 }
+  },
+  {
+    "id": "oled",
+    "name": "Noir OLED",
+    "author": "Theme Studio",
+    "description": "Noir pur pour les écrans OLED, contraste maximal, accent blanc.",
+    "tags": ["noir", "oled", "minimal"],
+    "tokens": { "accent": "#ffffff", "background": "#000000", "surface": "#0d0d0d", "text": "#ffffff", "textSecondary": "#8c8c8c", "radius": 10, "blur": 0, "font": "", "backgroundDim": 80 }
+  },
+  {
+    "id": "aurore",
+    "name": "Aurore",
+    "author": "Theme Studio",
+    "description": "Dégradé nordique vert et bleu, doux pour les yeux.",
+    "tags": ["sombre", "vert", "dégradé"],
+    "tokens": { "accent": "#34d399", "background": "#0c1717", "surface": "#132424", "text": "#e9fbf5", "textSecondary": "#93b8ad", "radius": 12, "blur": 14, "font": "", "backgroundDim": 65 },
+    "css": ".backgroundContainer{background:radial-gradient(1200px 600px at 10% -10%,color-mix(in srgb,#34d399 18%,transparent),transparent 60%),radial-gradient(900px 500px at 110% 0%,color-mix(in srgb,#38bdf8 16%,transparent),transparent 60%),var(--ts-bg)!important}"
+  },
+  {
+    "id": "braise",
+    "name": "Braise",
+    "author": "Theme Studio",
+    "description": "Ambiance cinéma chaude, noir fumé et accent orange.",
+    "tags": ["sombre", "orange", "cinéma"],
+    "tokens": { "accent": "#f97316", "background": "#120d0a", "surface": "#1f1712", "text": "#fff4ec", "textSecondary": "#c2a593", "radius": 8, "blur": 10, "font": "", "backgroundDim": 70 }
+  },
+  {
+    "id": "ocean",
+    "name": "Océan",
+    "author": "Theme Studio",
+    "description": "Bleu pétrole et cyan, net et moderne.",
+    "tags": ["sombre", "bleu"],
+    "tokens": { "accent": "#22d3ee", "background": "#071a24", "surface": "#0e2733", "text": "#e6f7fb", "textSecondary": "#8fb3bf", "radius": 16, "blur": 16, "font": "", "backgroundDim": 65 }
+  },
+  {
+    "id": "rose",
+    "name": "Rosé",
+    "author": "Theme Studio",
+    "description": "Prune sombre et accent rose, très arrondi.",
+    "tags": ["sombre", "rose", "arrondi"],
+    "tokens": { "accent": "#f472b6", "background": "#160e17", "surface": "#241826", "text": "#fdf0f7", "textSecondary": "#c4a3b8", "radius": 20, "blur": 14, "font": "", "backgroundDim": 70 }
+  },
+  {
+    "id": "ardoise",
+    "name": "Ardoise",
+    "author": "Theme Studio",
+    "description": "Gris ardoise sobre, angles nets, pour ceux qui aiment le calme.",
+    "tags": ["sombre", "gris", "minimal"],
+    "tokens": { "accent": "#94a3b8", "background": "#111418", "surface": "#1b2027", "text": "#e5e9ef", "textSecondary": "#8a94a3", "radius": 2, "blur": 0, "font": "", "backgroundDim": 60 }
+  }
+]
