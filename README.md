@@ -63,7 +63,7 @@ Elle défile toute seule (pause au survol), avec des flèches et des points pour
 
 ## Thèmes inclus
 
-Jellyfin (d'origine), Cinéma, Verre, Galaxie, Minuit, Noir OLED, Aurore, Braise, Océan, Rosé, Ardoise.
+Jellyfin (d'origine), Cinéma, Verre, Cristal, Galaxie, Minuit, Noir OLED, Aurore, Braise, Océan, Rosé, Ardoise.
 
 Dès qu'un thème est actif, l'interface prend aussi un style plus moderne : cartes qui se soulèvent au survol, titres de rangées plus marqués, fiches avec affiche en relief, boutons ronds et genres en pastilles.
 
