@@ -1181,6 +1181,13 @@
     return null;
   }
 
+  function asideImage(i) {
+    var w = 700;
+    if (i.BackdropImageTags && i.BackdropImageTags.length) return img(i.Id, 'Backdrop', i.BackdropImageTags[0], w);
+    if (i.ParentBackdropItemId && i.ParentBackdropImageTags && i.ParentBackdropImageTags.length) return img(i.ParentBackdropItemId, 'Backdrop', i.ParentBackdropImageTags[0], w);
+    return posterUrl(i);
+  }
+
   // Next titles as tall posters beside the featured card; a click brings one to the front.
   function renderAside() {
     var box = hero.el && hero.el.querySelector('.tsh-aside');
@@ -1190,7 +1197,8 @@
       var n = (hero.idx + k) % hero.items.length;
       var i = hero.items[n];
       var title = i.Type === 'Episode' ? (i.SeriesName || i.Name) : i.Name;
-      var p = posterUrl(i);
+      // Backdrop + logo, like the reference: posters already carry their title, which doubled it.
+      var p = asideImage(i);
       var logo = logoUrl(i);
       var sub = i.Type === 'Episode' && i.ParentIndexNumber != null ? 'S' + i.ParentIndexNumber + ' · É' + i.IndexNumber : (i.Genres || []).slice(0, 2).join(' · ');
       html += '<button type="button" class="tsh-ac" data-go="' + n + '" aria-label="' + esc(title) + '">' +
@@ -1408,7 +1416,8 @@
   // movies and series. Nothing here runs on TV (layout-tv): old TV browsers get
   // the lighter engine.css rules only, and remote focus stays with Jellyfin.
 
-  var SIDE_W = 232;
+  var SIDE_W = 76; // collapsed: icons only
+  var SIDE_OPEN = 248; // on hover or keyboard focus, over the page
   var ICONS = {
     home: 'M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z',
     search: 'M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z',
@@ -1430,17 +1439,26 @@
   var LAYOUT_CSS = [
     /* side bar */
     '#ts-side{display:none}',
-    'html.ts-side #ts-side{position:fixed;top:0;left:0;bottom:0;width:' + SIDE_W + 'px;z-index:999;display:flex;flex-direction:column;box-sizing:border-box;padding:20px 12px 14px;overflow-y:auto;scrollbar-width:none;color:var(--ts-text,#fff);font-family:var(--ts-font,inherit),system-ui,sans-serif;background:rgba(var(--ts-surface-rgb,24,24,24),.62);-webkit-backdrop-filter:blur(26px) saturate(1.5);backdrop-filter:blur(26px) saturate(1.5);border-right:1px solid rgba(255,255,255,.08);box-shadow:inset -1px 0 0 rgba(255,255,255,.03)}',
+    'html.ts-side #ts-side{position:fixed;top:0;left:0;bottom:0;width:' + SIDE_W + 'px;z-index:1200;display:flex;flex-direction:column;box-sizing:border-box;padding:20px 12px 14px;overflow-x:hidden;overflow-y:auto;scrollbar-width:none;transition:width .25s cubic-bezier(.2,.8,.2,1),background .25s,box-shadow .25s;color:var(--ts-text,#fff);font-family:var(--ts-font,inherit),system-ui,sans-serif;background:rgba(var(--ts-surface-rgb,24,24,24),.62);-webkit-backdrop-filter:blur(26px) saturate(1.5);backdrop-filter:blur(26px) saturate(1.5);border-right:1px solid rgba(255,255,255,.08);box-shadow:inset -1px 0 0 rgba(255,255,255,.03)}',
+    'html.ts-side #ts-side:hover,html.ts-side #ts-side:focus-within{width:' + SIDE_OPEN + 'px;background:rgba(var(--ts-surface-rgb,24,24,24),.92);box-shadow:20px 0 60px rgba(0,0,0,.55)}',
+    '.tss-l{opacity:0;transition:opacity .2s ease;white-space:nowrap}',
+    '#ts-side:hover .tss-l,#ts-side:focus-within .tss-l{opacity:1}',
+    '.tss-h{opacity:0;transition:opacity .2s;white-space:nowrap}',
+    '#ts-side:hover .tss-h,#ts-side:focus-within .tss-h{opacity:1}',
     'html.ts-side body{padding-left:' + SIDE_W + 'px!important}',
-    'html.ts-side .skinHeader{left:' + SIDE_W + 'px!important;width:auto!important;right:0!important}',
+    /* the side bar replaces the top bar: only the right-hand icons stay, floating */
+    'html.ts-side .skinHeader,html.ts-side .MuiAppBar-root{left:' + SIDE_W + 'px!important;width:auto!important;right:0!important;background:transparent!important;box-shadow:none!important;border:0!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;pointer-events:none}',
+    'html.ts-side .skinHeader *,html.ts-side .MuiAppBar-root *{pointer-events:auto}',
+    'html.ts-side .skinHeader .headerLeft>:not(.headerBackButton),html.ts-side .skinHeader .pageTitle,html.ts-side .MuiAppBar-root a[href="#/home"],html.ts-side .MuiAppBar-root a[href="#/"],html.ts-side .skinHeader a[href="#/home"],html.ts-side .skinHeader a[href*="topParentId"],html.ts-side .MuiAppBar-root a[href*="topParentId"],html.ts-side .skinHeader a[href*="parentId="],html.ts-side .MuiAppBar-root a[href*="parentId="],html.ts-side .skinHeader a[href*="tab=1"],html.ts-side .MuiAppBar-root a[href*="tab=1"],html.ts-side .MuiAppBar-root a[href*="favorites"],html.ts-side .skinHeader a[href*="favorites"]{display:none!important}',
+    'html.ts-side .skinHeader .headerRight button,html.ts-side .MuiAppBar-root .MuiIconButton-root,html.ts-side .MuiAppBar-root button{background:rgba(0,0,0,.35)!important;border-radius:50%!important;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);margin-left:6px}',
     'html.ts-side .mainDrawerButton,html.ts-side .headerHomeButton{display:none!important}',
-    '.tss-brand{display:flex;align-items:center;padding:4px 10px 18px;color:inherit!important;text-decoration:none!important;font-size:1.35em;font-weight:800;letter-spacing:-.02em}',
-    '.tss-brand b{display:inline-grid;place-items:center;width:34px;height:34px;margin-right:10px;border-radius:10px;background:var(--ts-accent,#00a4dc);color:#fff;font-size:.8em}',
-    '.tss-search{display:flex;align-items:center;width:100%;margin:0 0 18px;padding:10px 14px;border-radius:999px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.06);color:rgba(255,255,255,.6);font:inherit;font-size:.95em;cursor:pointer;text-align:left}',
+    '.tss-brand{display:flex;align-items:center;padding:4px 9px 18px;white-space:nowrap;color:inherit!important;text-decoration:none!important;font-size:1.35em;font-weight:800;letter-spacing:-.02em}',
+    '.tss-brand b{flex:0 0 34px;display:inline-grid;place-items:center;width:34px;height:34px;margin-right:10px;border-radius:10px;background:var(--ts-accent,#00a4dc);color:#fff;font-size:.8em}',
+    '.tss-search{display:flex;align-items:center;width:100%;margin:0 0 18px;padding:10px 14px;white-space:nowrap;overflow:hidden;border-radius:999px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.06);color:rgba(255,255,255,.6);font:inherit;font-size:.95em;cursor:pointer;text-align:left}',
     '.tss-search:hover{background:rgba(255,255,255,.1);color:#fff}',
-    '.tss-search svg{width:18px;height:18px;margin-right:10px}',
+    '.tss-search svg{flex:0 0 18px;width:18px;height:18px;margin-right:12px}',
     '.tss-h{margin:14px 12px 6px;font-size:.78em;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ts-text-2,rgba(255,255,255,.55))}',
-    '.tss-a{display:flex;align-items:center;margin:2px 0;padding:10px 12px;border-radius:12px;color:var(--ts-text-2,rgba(255,255,255,.72))!important;text-decoration:none!important;font-weight:600;font-size:.98em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:background .15s,color .15s}',
+    '.tss-a{display:flex;align-items:center;margin:2px 0;padding:10px 14px;border-radius:12px;color:var(--ts-text-2,rgba(255,255,255,.72))!important;text-decoration:none!important;font-weight:600;font-size:.98em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:background .15s,color .15s}',
     '.tss-a svg{flex:0 0 20px;width:20px;height:20px;margin-right:14px;opacity:.9}',
     '.tss-a:hover{background:rgba(255,255,255,.07);color:var(--ts-text,#fff)!important}',
     '.tss-a.on{background:rgba(255,255,255,.12);color:var(--ts-text,#fff)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.08)}',
@@ -1458,12 +1476,14 @@
     '.tsh-stage{position:absolute;top:0;right:0;bottom:0;left:0}',
     '.tsh-aside{display:none}',
     '.tsh.tsh-card{height:auto;overflow:visible;background:none;display:flex;margin:.6em 3.3% 1.8em}',
-    '.tsh-card .tsh-stage{position:relative;flex:1 1 auto;min-width:0;height:56vh;height:clamp(360px,56vh,640px);border-radius:22px;overflow:hidden;border:1px solid rgba(255,255,255,.1);box-shadow:0 24px 60px -20px rgba(0,0,0,.7);background:var(--ts-surface,#1c1c1c)}',
+    '.tsh-card .tsh-stage{position:relative;flex:1 1 auto;min-width:0;height:48vh;height:clamp(320px,48vh,560px);border-radius:22px;overflow:hidden;border:1px solid rgba(255,255,255,.1);box-shadow:0 24px 60px -20px rgba(0,0,0,.7);background:var(--ts-surface,#1c1c1c)}',
     '.tsh-card .tsh-info{left:2.4em;bottom:2.2em;width:auto;right:40%;min-width:320px}',
     '.tsh-card .tsh-dots{right:1.8em;bottom:1.8em}',
     '.tsh-card .tsh-mute{right:1.8em;bottom:4em}',
     '.tsh-card .tsh-logo{max-height:120px}',
     '.tsh-card .tsh-title{font-size:2.6em}',
+    '.tsh.tsh-card .tsh-info{background:none!important;border:0!important;box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;padding:0!important}',
+    '.tsh-card .tsh-shade{background:linear-gradient(to right,rgba(0,0,0,.85) 0%,rgba(0,0,0,.55) 38%,rgba(0,0,0,0) 70%),linear-gradient(to top,rgba(0,0,0,.6) 0%,rgba(0,0,0,0) 45%)}',
     '.tsh-card .tsh-info{right:18%}',
     '.tsh-card .tsh-btn{padding:.6em 1.25em;font-size:.98em}',
     '.tsh-card .tsh-ov{-webkit-line-clamp:2}',
@@ -1471,7 +1491,7 @@
     '.tsh-ac{position:relative;flex:0 0 auto;width:13vw;max-width:240px;min-width:150px;margin-left:16px;padding:0;border-radius:20px;overflow:hidden;cursor:pointer;border:1px solid rgba(255,255,255,.1);background:var(--ts-surface,#222);color:#fff;font:inherit;text-align:left;box-shadow:0 18px 40px -18px rgba(0,0,0,.7);transition:transform .25s ease,border-color .25s}',
     '.tsh-ac:hover{transform:translateY(-4px);border-color:rgba(255,255,255,.35)}',
     '.tsh-ac:focus-visible{outline:3px solid var(--ts-accent,#00a4dc);outline-offset:3px}',
-    '.tsh-ac img.tsh-acimg{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover}',
+    '.tsh-ac img.tsh-acimg{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;object-position:center 30%}',
     '.tsh-ac span.tsh-accap{position:absolute;left:0;right:0;bottom:0;padding:4em 1em 1em;background:linear-gradient(to top,rgba(0,0,0,.95),rgba(0,0,0,.6) 50%,rgba(0,0,0,0))}',
     '.tsh-ac img.tsh-aclogo{display:block;max-width:90%;max-height:54px;object-fit:contain;object-position:left bottom;margin-bottom:.45em}',
     '.tsh-ac strong{display:block;font-size:1.05em;font-weight:800;text-transform:uppercase;line-height:1.1;margin-bottom:.35em}',
@@ -1592,21 +1612,26 @@
     return ICONS[t] ? t : 'folder';
   }
 
+  function serverName() {
+    try { var c = api(); var n = c && ((c.serverName && c.serverName()) || (c.serverInfo && c.serverInfo() && c.serverInfo().Name)); if (n) return n; } catch (e) { /* ignore */ }
+    return 'Jellyfin';
+  }
+
   function renderSide() {
     if (!side.el) return;
-    var html = '<a class="tss-brand" href="#/home"><b>' + icon('movies').replace('<svg', '<svg width="18" height="18"') + '</b>Jellyfin</a>' +
-      '<button type="button" class="tss-search" data-search="1">' + icon('search') + 'Rechercher…</button>' +
-      '<a class="tss-a" data-k="home" href="#/home">' + icon('home') + 'Accueil</a>' +
-      '<a class="tss-a" data-k="fav" href="#/home?tab=1">' + icon('heart') + 'Ma liste</a>';
+    var html = '<a class="tss-brand" href="#/home"><b>' + icon('movies').replace('<svg', '<svg width="18" height="18"') + '</b><span class="tss-l">' + esc(serverName()) + '</span></a>' +
+      '<button type="button" class="tss-search" data-search="1">' + icon('search') + '<span class="tss-l">Rechercher…</span></button>' +
+      '<a class="tss-a" data-k="home" href="#/home" title="Accueil">' + icon('home') + '<span class="tss-l">Accueil</span></a>' +
+      '<a class="tss-a" data-k="fav" href="#/home?tab=1" title="Ma liste">' + icon('heart') + '<span class="tss-l">Ma liste</span></a>';
     var views = side.views || [];
     if (views.length) {
       html += '<div class="tss-h">Médiathèques</div>';
       views.forEach(function (v) {
-        html += '<a class="tss-a" data-k="' + esc(v.Id) + '" href="' + esc(viewHref(v)) + '" title="' + esc(v.Name) + '">' + icon(viewIcon(v)) + esc(v.Name) + '</a>';
+        html += '<a class="tss-a" data-k="' + esc(v.Id) + '" href="' + esc(viewHref(v)) + '" title="' + esc(v.Name) + '">' + icon(viewIcon(v)) + '<span class="tss-l">' + esc(v.Name) + '</span></a>';
       });
     }
-    html += '<div class="tss-foot"><a class="tss-a" data-k="prefs" href="#/mypreferencesmenu">' + icon('settings') + 'Paramètres</a>' +
-      (state.boot && state.boot.isAdmin ? '<a class="tss-a" data-k="admin" href="#/dashboard">' + icon('admin') + 'Administration</a>' : '') + '</div>';
+    html += '<div class="tss-foot"><a class="tss-a" data-k="prefs" href="#/mypreferencesmenu">' + icon('settings') + '<span class="tss-l">Paramètres</span></a>' +
+      (state.boot && state.boot.isAdmin ? '<a class="tss-a" data-k="admin" href="#/dashboard">' + icon('admin') + '<span class="tss-l">Administration</span></a>' : '') + '</div>';
     side.el.innerHTML = html;
     markSide();
   }
