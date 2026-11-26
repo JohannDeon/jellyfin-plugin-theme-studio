@@ -1673,7 +1673,7 @@
     markSide();
   }
 
-  /* --- Detail pages (movies and series) --- */
+  /* --- Detail pages (movies, series and collections) --- */
 
   var DX_FIELDS = 'Overview,Genres,ProductionYear,EndDate,Status,OfficialRating,CommunityRating,RunTimeTicks,ChildCount,RemoteTrailers,UserData,Taglines,LocalTrailerCount';
   var dx = { id: null, el: null, item: null, pending: null, seasons: [], season: null, episodes: {}, nextUp: null, first: null };
@@ -1718,7 +1718,7 @@
     jf('Items', { userId: state.userId, ids: id, fields: DX_FIELDS, enableImageTypes: 'Backdrop,Logo,Primary,Thumb' })
       .then(function (r) {
         var item = r.Items && r.Items[0];
-        if (!item || (item.Type !== 'Movie' && item.Type !== 'Series')) return null;
+        if (!item || (item.Type !== 'Movie' && item.Type !== 'Series' && item.Type !== 'BoxSet')) return null;
         if (item.Type !== 'Series') return { item: item };
         return Promise.all([
           jf('Shows/' + item.Id + '/Seasons', { userId: state.userId, fields: 'UserData' }).then(function (s) { return s.Items || []; }).catch(function () { return []; }),
@@ -1761,7 +1761,7 @@
     }
     var pct = i.UserData && i.UserData.PlayedPercentage;
     if (pct > 0 && pct < 100) return { text: 'Reprendre', sub: i.RunTimeTicks ? runtime(i.RunTimeTicks * (1 - pct / 100)) + ' restantes' : '' };
-    return { text: 'Lecture', sub: i.RunTimeTicks ? runtime(i.RunTimeTicks) : '' };
+    return { text: i.Type === 'BoxSet' ? 'Tout regarder' : 'Lecture', sub: i.RunTimeTicks && i.Type !== 'BoxSet' ? runtime(i.RunTimeTicks) : '' };
   }
 
   function renderDetail(page) {
@@ -1774,6 +1774,8 @@
     if (i.Type === 'Series') {
       var n = dx.seasons.filter(function (s) { return s.IndexNumber !== 0; }).length;
       if (n) meta.push('<span>' + n + (n > 1 ? ' saisons' : ' saison') + '</span>');
+    } else if (i.Type === 'BoxSet') {
+      if (i.ChildCount) meta.push('<span>' + i.ChildCount + (i.ChildCount > 1 ? ' films' : ' film') + '</span>');
     } else if (i.RunTimeTicks) meta.push('<span>' + esc(runtime(i.RunTimeTicks)) + '</span>');
     if (i.OfficialRating) meta.push('<span class="tsd-pill">' + esc(i.OfficialRating) + '</span>');
     if (i.CommunityRating) {
