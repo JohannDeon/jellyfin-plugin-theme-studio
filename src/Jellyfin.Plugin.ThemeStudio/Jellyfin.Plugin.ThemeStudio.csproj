@@ -1,16 +1,29 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
+    <!-- One build per Jellyfin generation: net9.0 = Jellyfin 10.11, net10.0 = Jellyfin 12 -->
+    <TargetFrameworks>net9.0;net10.0</TargetFrameworks>
     <RootNamespace>Jellyfin.Plugin.ThemeStudio</RootNamespace>
-    <AssemblyVersion>1.0.0.0</AssemblyVersion>
-    <FileVersion>1.0.0.0</FileVersion>
+    <!-- Plugin version. The 4th number tells the builds apart (11 = Jellyfin 10.11, 12 = Jellyfin 12) -->
+    <PluginVersion>1.0.0</PluginVersion>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <!-- Jellyfin version the plugin is built against; also used as targetAbi in manifest.json -->
+  </PropertyGroup>
+
+  <!-- Jellyfin version each build compiles against; also used as targetAbi in manifest.json -->
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net9.0'">
+    <JellyfinVersion>10.11.0</JellyfinVersion>
+    <AbiTag>11</AbiTag>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net10.0'">
     <JellyfinVersion>12.0.0</JellyfinVersion>
+    <AbiTag>12</AbiTag>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyVersion>$(PluginVersion).$(AbiTag)</AssemblyVersion>
+    <FileVersion>$(PluginVersion).$(AbiTag)</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>

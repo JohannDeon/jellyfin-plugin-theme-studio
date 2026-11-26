@@ -16,7 +16,7 @@ Pensé comme un successeur plus pratique de Skin Manager.
 C'est tout. Il n'y a aucun fichier à modifier, pas de CSS à coller, et aucun autre plugin à installer.
 Un bouton palette apparaît dans la barre du haut de l'interface web.
 
-> Version de Jellyfin requise : 12.0 ou plus récente.
+> Fonctionne avec Jellyfin **10.11** et **12**. Jellyfin installe automatiquement la bonne version.
 
 ## Ce que ça fait
 
@@ -92,11 +92,11 @@ Jellyfin (d'origine), Minuit, Noir OLED, Aurore, Braise, Océan, Rosé, Ardoise.
 ## Développement
 
 ```sh
-dotnet test                     # tests (.NET 10)
+dotnet test                     # tests (SDK .NET 10, compile aussi la version .NET 9 pour Jellyfin 10.11)
 dotnet publish src/Jellyfin.Plugin.ThemeStudio -c Release -o out
 ```
-Copie `out/Jellyfin.Plugin.ThemeStudio.dll` dans `plugins/ThemeStudio/` puis redémarre Jellyfin.
+Ajoute `-f net9.0` (Jellyfin 10.11) ou `-f net10.0` (Jellyfin 12), puis copie `out/Jellyfin.Plugin.ThemeStudio.dll` dans `plugins/ThemeStudio/` puis redémarre Jellyfin.
 
 ### Publier une version
-Augmente `<AssemblyVersion>` dans `src/Jellyfin.Plugin.ThemeStudio/Jellyfin.Plugin.ThemeStudio.csproj` et fusionne dans `main`.
-Le workflow **Release** compile le plugin, crée la release GitHub et met à jour `manifest.json` automatiquement.
+Augmente `<PluginVersion>` dans `src/Jellyfin.Plugin.ThemeStudio/Jellyfin.Plugin.ThemeStudio.csproj` et fusionne dans `main`.
+Le workflow **Release** compile le plugin pour Jellyfin 10.11 et 12, crée la release GitHub et met à jour `manifest.json` automatiquement.
