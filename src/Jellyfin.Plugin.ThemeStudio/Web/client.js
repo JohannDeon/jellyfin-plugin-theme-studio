@@ -1454,7 +1454,12 @@
     'html.ts-side .skinHeader .emby-tabs-slider{padding:2px!important}',
     'html.ts-side .skinHeader .emby-tab-button{font-size:.92em!important;padding:.45em 1.1em!important}',
     'html.ts-side .skinHeader .headerLeft>:not(.headerBackButton),html.ts-side .skinHeader .pageTitle,html.ts-side .MuiAppBar-root a[href="#/home"],html.ts-side .MuiAppBar-root a[href="#/"],html.ts-side .skinHeader a[href="#/home"],html.ts-side .skinHeader a[href*="topParentId"],html.ts-side .MuiAppBar-root a[href*="topParentId"],html.ts-side .skinHeader a[href*="parentId="],html.ts-side .MuiAppBar-root a[href*="parentId="],html.ts-side .skinHeader a[href*="tab=1"],html.ts-side .MuiAppBar-root a[href*="tab=1"],html.ts-side .MuiAppBar-root a[href*="favorites"],html.ts-side .skinHeader a[href*="favorites"]{display:none!important}',
-    'html.ts-side .skinHeader .headerRight button,html.ts-side .MuiAppBar-root .MuiIconButton-root,html.ts-side .MuiAppBar-root button{background:rgba(0,0,0,.35)!important;border-radius:50%!important;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);margin-left:6px}',
+    /* header icons live in the side bar now: keep them (hidden) so the side bar can press them */
+    'html.ts-side .skinHeader .headerLeft,html.ts-side .skinHeader .headerRight,html.ts-side .MuiAppBar-root button:not([role=tab]),html.ts-side .MuiAppBar-root .MuiAvatar-root{visibility:hidden!important}',
+    '.tss-ic{flex:0 0 20px;width:20px;height:20px;margin-right:14px;display:inline-grid;place-items:center;overflow:hidden;border-radius:50%;background-size:cover;background-position:center}',
+    '.tss-ic .material-icons,.tss-ic span{font-size:20px!important;line-height:20px}',
+    '.tss-ic svg{width:20px;height:20px;margin:0}',
+    'button.tss-a{width:100%;border:0;background:none;font-family:inherit;cursor:pointer;text-align:left}',
     'html.ts-side .mainDrawerButton,html.ts-side .headerHomeButton{display:none!important}',
     '.tss-brand{display:flex;align-items:center;padding:4px 9px 18px;white-space:nowrap;color:inherit!important;text-decoration:none!important;font-size:1.35em;font-weight:800;letter-spacing:-.02em}',
     '.tss-brand b{flex:0 0 34px;display:inline-grid;place-items:center;width:34px;height:34px;margin-right:10px;border-radius:10px;background:var(--ts-accent,#00a4dc);color:#fff;font-size:.8em}',
@@ -1483,7 +1488,7 @@
     /* hero as a featured card next to tall posters */
     '.tsh-stage{position:absolute;top:0;right:0;bottom:0;left:0}',
     '.tsh-aside{display:none}',
-    '.tsh.tsh-card{height:auto;overflow:visible;background:none;display:flex;margin:.6em 3.3% 1.8em}',
+    '.tsh.tsh-card{height:auto;overflow:visible;background:none;display:flex;margin:-1.4em 3.3% 1.8em}',
     '.tsh-card .tsh-stage{position:relative;flex:1 1 auto;min-width:0;height:48vh;height:clamp(320px,48vh,560px);border-radius:22px;overflow:hidden;border:1px solid rgba(255,255,255,.1);box-shadow:0 24px 60px -20px rgba(0,0,0,.7);background:var(--ts-surface,#1c1c1c)}',
     '.tsh-card .tsh-info{left:2.4em;bottom:2.2em;width:auto;right:40%;min-width:320px}',
     '.tsh-card .tsh-dots{right:1.8em;bottom:1.8em}',
@@ -1581,7 +1586,7 @@
 
   /* --- Side bar --- */
 
-  var side = { el: null, views: null, uid: null, loading: false };
+  var side = { el: null, views: null, uid: null, loading: false, tools: [], toolSig: '' };
 
   function sideWanted() {
     if (!layoutEnabled() || htmlClass().contains('layout-mobile')) return false;
@@ -1638,9 +1643,11 @@
         html += '<a class="tss-a" data-k="' + esc(v.Id) + '" href="' + esc(viewHref(v)) + '" title="' + esc(v.Name) + '">' + icon(viewIcon(v)) + '<span class="tss-l">' + esc(v.Name) + '</span></a>';
       });
     }
-    html += '<div class="tss-foot"><a class="tss-a" data-k="prefs" href="#/mypreferencesmenu">' + icon('settings') + '<span class="tss-l">Paramètres</span></a>' +
+    html += '<div class="tss-foot"><div class="tss-tools"></div>' + (wantsButton() ? '<button type="button" class="tss-a" data-theme="1" title="Thèmes">' + PALETTE_SVG.replace('width="24" height="24"', '') + '<span class="tss-l">Thèmes</span></button>' : '') + '<a class="tss-a" data-k="prefs" href="#/mypreferencesmenu">' + icon('settings') + '<span class="tss-l">Paramètres</span></a>' +
       (state.boot && state.boot.isAdmin ? '<a class="tss-a" data-k="admin" href="#/dashboard">' + icon('admin') + '<span class="tss-l">Administration</span></a>' : '') + '</div>';
     side.el.innerHTML = html;
+    side.toolSig = '';
+    syncTools();
     markSide();
   }
 
@@ -1652,6 +1659,58 @@
       var on = a.getAttribute('data-k') === key;
       a.classList.toggle('on', on);
       if (on) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
+    });
+  }
+
+  // Header icons (SyncPlay, cast, profile...) as side bar entries that press the native buttons.
+  function headerTools() {
+    var list = document.querySelectorAll('.skinHeader .headerRight button, .MuiAppBar-root button:not([role=tab])');
+    var out = [];
+    for (var k = 0; k < list.length; k++) {
+      var b = list[k];
+      if (b.classList.contains('hide') || b.classList.contains('themeStudioButton') || b.classList.contains('headerSearchButton') || b.classList.contains('headerBackButton') || b.classList.contains('mainDrawerButton')) continue;
+      if (getComputedStyle(b).display === 'none') continue;
+      var label = b.getAttribute('aria-label') || b.getAttribute('title') || '';
+      if (/recherch|search/i.test(label)) continue;
+      out.push(b);
+    }
+    return out;
+  }
+
+  function toolLabel(b) {
+    var l = b.getAttribute('aria-label') || b.getAttribute('title') || '';
+    if (b.classList.contains('headerUserButton') || /user|utilisateur|profil|account|compte/i.test(l + ' ' + b.className)) return l || 'Mon profil';
+    if (b.classList.contains('headerCastButton') || /cast|remote|distance/i.test(l + ' ' + b.className)) return l || 'Diffuser sur un appareil';
+    if (b.classList.contains('headerSyncButton') || /sync/i.test(l + ' ' + b.className)) return l || 'SyncPlay';
+    return l || 'Action';
+  }
+
+  function syncTools() {
+    var box = side.el && side.el.querySelector('.tss-tools');
+    if (!box) return;
+    var tools = headerTools();
+    var sig = tools.map(function (b) { return b.className + '|' + toolLabel(b) + '|' + (b.getAttribute('style') || '') + '|' + b.innerHTML.length; }).join(';');
+    if (sig === side.toolSig && box.childNodes.length === tools.length) return;
+    side.toolSig = sig;
+    side.tools = tools;
+    box.innerHTML = '';
+    tools.forEach(function (b, k) {
+      var a = document.createElement('button');
+      a.type = 'button';
+      a.className = 'tss-a';
+      a.setAttribute('data-tool', String(k));
+      a.title = toolLabel(b);
+      var ic = document.createElement('span');
+      ic.className = 'tss-ic';
+      ic.innerHTML = b.innerHTML;
+      var bg = b.style && b.style.backgroundImage;
+      if (bg && bg !== 'none') ic.style.backgroundImage = bg;
+      var l = document.createElement('span');
+      l.className = 'tss-l';
+      l.textContent = toolLabel(b);
+      a.appendChild(ic);
+      a.appendChild(l);
+      box.appendChild(a);
     });
   }
 
@@ -1668,6 +1727,10 @@
       side.el.addEventListener('click', function (e) {
         // A mouse click must not leave the bar open through keyboard focus.
         if (e.target.closest && e.target.closest('a') && !isTv()) setTimeout(function () { if (document.activeElement && side.el.contains(document.activeElement)) document.activeElement.blur(); }, 0);
+        var th = e.target.closest ? e.target.closest('[data-theme]') : null;
+        if (th) { open(); return; }
+        var tool = e.target.closest ? e.target.closest('[data-tool]') : null;
+        if (tool) { var nb = side.tools[Number(tool.getAttribute('data-tool'))]; if (nb && document.body.contains(nb)) nb.click(); return; }
         var b = e.target.closest ? e.target.closest('[data-search]') : null;
         if (!b) return;
         var native = document.querySelector('.headerSearchButton');
@@ -1677,6 +1740,7 @@
     }
     if (side.el.parentNode !== document.body) document.body.appendChild(side.el);
     loadViews();
+    syncTools();
     markSide();
   }
 
