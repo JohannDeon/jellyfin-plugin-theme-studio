@@ -69,6 +69,8 @@ public class ThemeStudioController : ControllerBase
             UserSelection = settings.AllowUserThemes && userId != Guid.Empty ? Store.GetUserSelection(userId) : null,
             AllowUserThemes = settings.AllowUserThemes,
             ShowHeaderButton = settings.ShowHeaderButton,
+            ShowHomeHero = settings.ShowHomeHero,
+            HomeHeroSource = settings.HomeHeroSource,
             IsAdmin = User.IsInRole("Administrator"),
             Version = typeof(Plugin).Assembly.GetName().Version?.ToString() ?? "0",
         });
@@ -176,6 +178,10 @@ public sealed class BootstrapResponse
     public bool AllowUserThemes { get; set; }
 
     public bool ShowHeaderButton { get; set; }
+
+    public bool ShowHomeHero { get; set; }
+
+    public string HomeHeroSource { get; set; } = "mixed";
 
     public bool IsAdmin { get; set; }
 

@@ -14,6 +14,12 @@ public class PluginConfiguration : BasePluginConfiguration
     /// <summary>Gets or sets a value indicating whether the palette button is shown in the header.</summary>
     public bool ShowHeaderButton { get; set; } = true;
 
+    /// <summary>Gets or sets a value indicating whether the big home page banner is shown.</summary>
+    public bool ShowHomeHero { get; set; } = true;
+
+    /// <summary>Gets or sets what the banner shows: "mixed", "resume" or "latest".</summary>
+    public string HomeHeroSource { get; set; } = "mixed";
+
     /// <summary>Gets or sets the default selection (theme + overrides + CSS) as JSON.</summary>
     public string DefaultSelectionJson { get; set; } = string.Empty;
 

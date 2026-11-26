@@ -32,6 +32,8 @@ public class ThemeStore
         {
             AllowUserThemes = config.AllowUserThemes,
             ShowHeaderButton = config.ShowHeaderButton,
+            ShowHomeHero = config.ShowHomeHero,
+            HomeHeroSource = NormalizeHeroSource(config.HomeHeroSource),
             DefaultSelection = ThemeJson.TryDeserialize<ThemeSelection>(config.DefaultSelectionJson) ?? new ThemeSelection(),
             CustomThemes = ThemeJson.TryDeserialize<List<ThemeDefinition>>(config.CustomThemesJson) ?? new List<ThemeDefinition>(),
         };
@@ -43,6 +45,8 @@ public class ThemeStore
         var config = plugin.Configuration;
         config.AllowUserThemes = settings.AllowUserThemes;
         config.ShowHeaderButton = settings.ShowHeaderButton;
+        config.ShowHomeHero = settings.ShowHomeHero;
+        config.HomeHeroSource = NormalizeHeroSource(settings.HomeHeroSource);
         config.DefaultSelectionJson = ThemeJson.Serialize(settings.DefaultSelection ?? new ThemeSelection());
         var custom = (settings.CustomThemes ?? new List<ThemeDefinition>())
             .Select(t =>
@@ -99,6 +103,9 @@ public class ThemeStore
         return ThemeCssBuilder.Build(theme, settings.DefaultSelection);
     }
 
+    internal static string NormalizeHeroSource(string? value)
+        => value is "resume" or "latest" ? value : "mixed";
+
     private string UserPath(Guid userId) => Path.Combine(_usersFolder, userId.ToString("N") + ".json");
 }
 
@@ -108,6 +115,12 @@ public sealed class ServerSettings
     public bool AllowUserThemes { get; set; } = true;
 
     public bool ShowHeaderButton { get; set; } = true;
+
+    /// <summary>Gets or sets a value indicating whether the home page banner is shown by default.</summary>
+    public bool ShowHomeHero { get; set; } = true;
+
+    /// <summary>Gets or sets what the banner shows: "mixed" (resume then new), "resume" or "latest".</summary>
+    public string HomeHeroSource { get; set; } = "mixed";
 
     public ThemeSelection? DefaultSelection { get; set; } = new();
 

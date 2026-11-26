@@ -90,4 +90,7 @@ public sealed class ThemeSelection
     public ThemeTokens? Overrides { get; set; }
 
     public string? CustomCss { get; set; }
+
+    /// <summary>Gets or sets the user's choice for the home banner (null = server default).</summary>
+    public bool? HomeHero { get; set; }
 }

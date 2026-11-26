@@ -49,6 +49,16 @@ Un bouton palette apparaît dans la barre du haut de l'interface web.
 
 ![Réglages admin](assets/screenshot-admin.png)
 
+### Grande bannière d'accueil
+En haut de la page d'accueil, une grande image plein écran fait défiler les films et séries **à reprendre** puis les **nouveautés** :
+logo ou titre, note, année, genres, résumé, progression, et les boutons **Lecture / Reprendre** et **Plus d'infos**.
+Elle défile toute seule (pause au survol), avec des flèches et des points pour naviguer.
+
+- Admin : **Réglages → Page d'accueil** pour l'activer ou non et choisir son contenu (à reprendre + nouveautés, seulement l'un ou l'autre).
+- Utilisateur : **Personnaliser → Page d'accueil** pour l'afficher ou la masquer pour soi.
+
+![Bannière d'accueil](assets/screenshot-hero.png)
+
 ## Thèmes inclus
 
 Jellyfin (d'origine), Minuit, Noir OLED, Aurore, Braise, Océan, Rosé, Ardoise.
