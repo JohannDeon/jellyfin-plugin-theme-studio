@@ -233,6 +233,12 @@ a:not(.emby-button):not(.cardImageContainer):not(.navMenuOption), .button-link {
   background: var(--ts-text) !important;
   color: var(--ts-bg) !important;
 }
+.mainDetailButtons .btnPlay.detailButton .material-icons, .mainDetailButtons .btnResume.detailButton .material-icons,
+.mainDetailButtons .btnPlay.detailButton .detailButton-icon, .mainDetailButtons .btnResume.detailButton .detailButton-icon,
+.mainDetailButtons .btnPlay.detailButton svg, .mainDetailButtons .btnResume.detailButton svg {
+  color: var(--ts-bg) !important;
+  fill: currentColor;
+}
 .genres a, .itemGenres a, .itemTags a {
   display: inline-block;
   padding: .1em .65em;
