@@ -61,6 +61,12 @@ Elle défile toute seule (pause au survol), avec des flèches et des points pour
 
 ![Bannière d'accueil](assets/screenshot-hero.png)
 
+## Mise en page streaming
+Activée par défaut (admin : **Réglages → Mise en page**).
+- **Ordinateur** : barre de navigation fixe à gauche (recherche, accueil, Ma liste, médiathèques, paramètres). L'accueil affiche une grande carte « Reprendre » à côté des titres suivants en affiches hautes, et les affiches portent leur titre directement sur l'image.
+- **Fiches films et séries** : image plein écran, logo, année, saisons, classification, note, genres, résumé, gros bouton Lecture (« Reprendre S2 É3 » pour une série), Ma liste, bande-annonce et infos. Pour une série, des onglets de saisons et une rangée d'épisodes en vignettes : un clic lance l'épisode.
+- **TV (LG webOS, Samsung)** : le navigateur de ces TV est ancien. Le thème y reste simple (pas de flou, panneaux opaques), avec un contour bien visible sur l'élément sélectionné à la télécommande. L'application native **Jellyfin Android TV** n'affiche pas l'interface web : aucune extension de thème ne peut la modifier.
+
 ## Thèmes inclus
 
 Jellyfin (d'origine), Cinéma, Verre, Cristal, Galaxie, Minuit, Noir OLED, Aurore, Braise, Océan, Rosé, Ardoise.
@@ -68,6 +74,7 @@ Jellyfin (d'origine), Cinéma, Verre, Cristal, Galaxie, Minuit, Noir OLED, Auror
 Dès qu'un thème est actif, l'interface prend aussi un style plus moderne : cartes qui se soulèvent au survol, titres de rangées plus marqués, fiches avec affiche en relief, boutons ronds et genres en pastilles.
 
 ## Compatibilité
+- **TV LG / Samsung** : compatible (version allégée, voir plus haut).
 - **Genre Collections** : compatible. La bannière reste tout en haut, et les rangées de Genre Collections prennent automatiquement le style du thème.
 
 ## Comment ça marche

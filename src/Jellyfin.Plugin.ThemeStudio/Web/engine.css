@@ -1,10 +1,10 @@
 /* Theme Studio engine: maps the --ts-* design tokens onto Jellyfin Web.
    Tokens: --ts-accent --ts-bg --ts-surface --ts-text --ts-text-2 --ts-radius --ts-blur --ts-font --ts-bg-image */
 :root {
-  --ts-surface-2: color-mix(in srgb, var(--ts-surface) 80%, var(--ts-text) 8%);
-  --ts-border: color-mix(in srgb, var(--ts-text) 12%, transparent);
-  --ts-accent-soft: color-mix(in srgb, var(--ts-accent) 22%, transparent);
-  --ts-glass: color-mix(in srgb, var(--ts-surface) 72%, transparent);
+  --ts-surface-2: rgb(var(--ts-surface-2-rgb, var(--ts-surface-rgb, 40,40,40)));
+  --ts-border: rgba(var(--ts-text-rgb, 255,255,255), 0.12);
+  --ts-accent-soft: rgba(var(--ts-accent-rgb, 0,164,220), 0.22);
+  --ts-glass: rgba(var(--ts-surface-rgb, 32,32,32), 0.72);
   --ts-radius-sm: calc(var(--ts-radius) * 0.6);
 }
 
@@ -23,7 +23,7 @@ body, .emby-button, .emby-input, .emby-select, .emby-textarea, .button-flat, h1,
   background-position: center !important;
   background-attachment: fixed !important;
 }
-.backgroundContainer.withBackdrop { background-color: color-mix(in srgb, var(--ts-bg) 80%, transparent) !important; }
+.backgroundContainer.withBackdrop { background-color: rgba(var(--ts-bg-rgb, 16,16,16), 0.8) !important; }
 .secondaryText, .fieldDescription, .listItemBodyText.secondary, .cardText-secondary, .itemMiscInfo, .mediaInfoItem, .textActionButton .secondary {
   color: var(--ts-text-2) !important;
 }
@@ -44,7 +44,7 @@ a:not(.emby-button):not(.cardImageContainer):not(.navMenuOption), .button-link {
   color: var(--ts-text) !important;
 }
 .navMenuOption { border-radius: var(--ts-radius-sm) !important; margin: 2px 8px !important; }
-.navMenuOption:hover { background: color-mix(in srgb, var(--ts-text) 8%, transparent) !important; }
+.navMenuOption:hover { background: rgba(var(--ts-text-rgb, 255,255,255), 0.08) !important; }
 .navMenuOption-selected, .navMenuOption-selected:hover {
   background: var(--ts-accent-soft) !important;
   color: var(--ts-text) !important;
@@ -75,7 +75,7 @@ a:not(.emby-button):not(.cardImageContainer):not(.navMenuOption), .button-link {
 .itemProgressBarForeground, .itemProgressBar > div, .progressring-spiner, .mdl-slider-background-lower, .emby-slider-background-lower {
   background-color: var(--ts-accent) !important;
 }
-.itemProgressBar { background: color-mix(in srgb, var(--ts-text) 18%, transparent) !important; border-radius: 999px; overflow: hidden; }
+.itemProgressBar { background: rgba(var(--ts-text-rgb, 255,255,255), 0.18) !important; border-radius: 999px; overflow: hidden; }
 
 /* ---------- Buttons ---------- */
 .emby-button, .raised, .fab, .detailButton, .button-flat, .paper-icon-button-light { border-radius: var(--ts-radius-sm) !important; }
@@ -133,12 +133,12 @@ a:not(.emby-button):not(.cardImageContainer):not(.navMenuOption), .button-link {
   border: 1px solid var(--ts-border);
 }
 .listItem-border, .listItem { border-color: var(--ts-border) !important; }
-.listItem:hover, .actionSheetMenuItem:hover { background: color-mix(in srgb, var(--ts-text) 6%, transparent) !important; }
+.listItem:hover, .actionSheetMenuItem:hover { background: rgba(var(--ts-text-rgb, 255,255,255), 0.06) !important; }
 .actionSheetMenuItem { border-radius: var(--ts-radius-sm) !important; }
 
 /* ---------- Item details ---------- */
 .detailRibbon, .layout-desktop .detailRibbon {
-  background: color-mix(in srgb, var(--ts-bg) 78%, transparent) !important;
+  background: rgba(var(--ts-bg-rgb, 16,16,16), 0.78) !important;
   -webkit-backdrop-filter: blur(var(--ts-blur));
   backdrop-filter: blur(var(--ts-blur));
 }
@@ -166,8 +166,8 @@ a:not(.emby-button):not(.cardImageContainer):not(.navMenuOption), .button-link {
 }
 
 /* ---------- Scrollbars ---------- */
-* { scrollbar-color: color-mix(in srgb, var(--ts-text) 25%, transparent) transparent; }
-::-webkit-scrollbar-thumb { background: color-mix(in srgb, var(--ts-text) 25%, transparent); border-radius: 999px; }
+* { scrollbar-color: rgba(var(--ts-text-rgb, 255,255,255), 0.25) transparent; }
+::-webkit-scrollbar-thumb { background: rgba(var(--ts-text-rgb, 255,255,255), 0.25); border-radius: 999px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--ts-accent); }
 
 /* ======================= Modern streaming look (v1.2) ======================= */
@@ -192,7 +192,7 @@ a:not(.emby-button):not(.cardImageContainer):not(.navMenuOption), .button-link {
 @media (hover: hover) and (pointer: fine) {
   .card:hover .cardScalable {
     transform: translateY(-4px) scale(1.035);
-    box-shadow: 0 16px 34px rgba(0, 0, 0, .5), 0 0 0 2px color-mix(in srgb, var(--ts-accent) 55%, transparent);
+    box-shadow: 0 16px 34px rgba(0, 0, 0, .5), 0 0 0 2px rgba(var(--ts-accent-rgb, 0,164,220), 0.55);
     border-radius: var(--ts-radius);
     z-index: 2;
   }
@@ -201,7 +201,7 @@ a:not(.emby-button):not(.cardImageContainer):not(.navMenuOption), .button-link {
 .cardImageContainer { box-shadow: 0 4px 14px rgba(0, 0, 0, .28); }
 .cardText-first { font-weight: 600; }
 .cardOverlayButton, .cardOverlayFab-primary {
-  background: color-mix(in srgb, var(--ts-accent) 85%, transparent) !important;
+  background: rgba(var(--ts-accent-rgb, 0,164,220), 0.85) !important;
   color: var(--ts-bg) !important;
   border-radius: 999px !important;
 }
@@ -239,7 +239,7 @@ a:not(.emby-button):not(.cardImageContainer):not(.navMenuOption), .button-link {
   margin: .15em .2em .15em 0;
   border-radius: 999px;
   border: 1px solid var(--ts-border);
-  background: color-mix(in srgb, var(--ts-text) 6%, transparent);
+  background: rgba(var(--ts-text-rgb, 255,255,255), 0.06);
   color: var(--ts-text) !important;
   text-decoration: none !important;
 }
@@ -262,3 +262,25 @@ a:not(.emby-button):not(.cardImageContainer):not(.navMenuOption), .button-link {
   .cardScalable, .sectionTitleTextButton .material-icons { transition: none !important; }
   .card:hover .cardScalable { transform: none !important; }
 }
+
+/* ---------- TV (LG webOS, Samsung Tizen): light and remote friendly ----------
+   TV browsers are old and slow: no blur, opaque panels, a clear focus ring. */
+html.layout-tv { --ts-glass: rgba(var(--ts-surface-rgb, 32, 32, 32), .97); }
+.layout-tv * { -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+.layout-tv .card:hover .cardScalable { transform: none; box-shadow: none; }
+.layout-tv .card:focus .cardImageContainer {
+  box-shadow: 0 0 0 4px var(--ts-accent), 0 14px 30px rgba(0, 0, 0, .6) !important;
+  border-radius: var(--ts-radius);
+}
+.layout-tv .card:focus .cardText-first { color: var(--ts-accent) !important; }
+.layout-tv .emby-button:focus, .layout-tv .emby-tab-button:focus, .layout-tv .listItem:focus,
+.layout-tv .navMenuOption:focus, .layout-tv .detailButton:focus {
+  background: var(--ts-accent) !important;
+  color: #fff !important;
+}
+.layout-tv .tsh-btn:focus, .layout-tv .tsh-round:focus, .layout-tv .tsh-dot:focus {
+  outline: 4px solid var(--ts-accent);
+  outline-offset: 3px;
+}
+.layout-tv .tsh-btn:focus { transform: scale(1.06); }
+.layout-tv .tsh-arrow { display: none; }

@@ -21,6 +21,23 @@ public class ThemeTests
     }
 
     [Fact]
+    public void VariablesExposeRgbTripletsForOldTvBrowsers()
+    {
+        var vars = ThemeCssBuilder.Variables(new ThemeTokens { Accent = "#e50914", Background = "#fff", Surface = "rgb(20, 30, 40)", Text = "#ffffff" });
+        Assert.Contains("--ts-accent-rgb:229,9,20;", vars);
+        Assert.Contains("--ts-bg-rgb:255,255,255;", vars);
+        Assert.Contains("--ts-surface-rgb:20,30,40;", vars);
+        Assert.Contains("--ts-surface-2-rgb:39,48,57;", vars);
+    }
+
+    [Fact]
+    public void EngineAndThemesAvoidColorMix()
+    {
+        Assert.DoesNotContain("color-mix", ThemeCatalog.ReadResource("engine.css"), StringComparison.Ordinal);
+        Assert.All(ThemeCatalog.BuiltIn, t => Assert.DoesNotContain("color-mix", t.Css ?? string.Empty, StringComparison.Ordinal));
+    }
+
+    [Fact]
     public void StockThemeWithoutOverridesProducesNoCss()
     {
         var stock = ThemeCatalog.Find(ThemeCatalog.BuiltIn, "jellyfin");
