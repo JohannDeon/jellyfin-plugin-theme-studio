@@ -1757,8 +1757,13 @@
   var dx = { id: null, el: null, item: null, pending: null, seasons: [], season: null, episodes: {}, nextUp: null, first: null };
 
   function detailPage() {
-    var p = document.querySelector('#itemDetailPage:not(.hide)') || document.querySelector('.itemDetailPage:not(.hide)');
-    return p && p.offsetParent !== null ? p : null;
+    // offsetParent is null for position:fixed pages, so test the box instead.
+    var pages = document.querySelectorAll('#itemDetailPage, .itemDetailPage');
+    for (var k = 0; k < pages.length; k++) {
+      var p = pages[k];
+      if (!p.classList.contains('hide') && p.getClientRects().length && p.offsetWidth > 0) return p;
+    }
+    return null;
   }
 
   // Native parts our header replaces. Never hide a block that holds the rest of the page.
