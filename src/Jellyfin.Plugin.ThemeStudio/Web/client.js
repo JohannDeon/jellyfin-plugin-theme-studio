@@ -1440,15 +1440,19 @@
     /* side bar */
     '#ts-side{display:none}',
     'html.ts-side #ts-side{position:fixed;top:0;left:0;bottom:0;width:' + SIDE_W + 'px;z-index:1200;display:flex;flex-direction:column;box-sizing:border-box;padding:20px 12px 14px;overflow-x:hidden;overflow-y:auto;scrollbar-width:none;transition:width .25s cubic-bezier(.2,.8,.2,1),background .25s,box-shadow .25s;color:var(--ts-text,#fff);font-family:var(--ts-font,inherit),system-ui,sans-serif;background:rgba(var(--ts-surface-rgb,24,24,24),.62);-webkit-backdrop-filter:blur(26px) saturate(1.5);backdrop-filter:blur(26px) saturate(1.5);border-right:1px solid rgba(255,255,255,.08);box-shadow:inset -1px 0 0 rgba(255,255,255,.03)}',
-    'html.ts-side #ts-side:hover,html.ts-side #ts-side:focus-within{width:' + SIDE_OPEN + 'px;background:rgba(var(--ts-surface-rgb,24,24,24),.92);box-shadow:20px 0 60px rgba(0,0,0,.55)}',
+    'html.ts-side #ts-side:hover,html.ts-kbd.ts-side #ts-side:focus-within,html.layout-tv.ts-side #ts-side:focus-within{width:' + SIDE_OPEN + 'px;background:rgba(var(--ts-surface-rgb,24,24,24),.92);box-shadow:20px 0 60px rgba(0,0,0,.55)}',
     '.tss-l{opacity:0;transition:opacity .2s ease;white-space:nowrap}',
-    '#ts-side:hover .tss-l,#ts-side:focus-within .tss-l{opacity:1}',
+    '#ts-side:hover .tss-l,html.ts-kbd #ts-side:focus-within .tss-l,html.layout-tv #ts-side:focus-within .tss-l{opacity:1}',
     '.tss-h{opacity:0;transition:opacity .2s;white-space:nowrap}',
-    '#ts-side:hover .tss-h,#ts-side:focus-within .tss-h{opacity:1}',
+    '#ts-side:hover .tss-h,html.ts-kbd #ts-side:focus-within .tss-h,html.layout-tv #ts-side:focus-within .tss-h{opacity:1}',
     'html.ts-side body{padding-left:' + SIDE_W + 'px!important}',
     /* the side bar replaces the top bar: only the right-hand icons stay, floating */
     'html.ts-side .skinHeader,html.ts-side .MuiAppBar-root{left:' + SIDE_W + 'px!important;width:auto!important;right:0!important;background:transparent!important;box-shadow:none!important;border:0!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;pointer-events:none}',
     'html.ts-side .skinHeader *,html.ts-side .MuiAppBar-root *{pointer-events:auto}',
+    /* home: Accueil / Favoris are in the side bar; elsewhere keep the tabs but compact */
+    'html.ts-side.ts-home .skinHeader .headerTabs,html.ts-side.ts-home .skinHeader .emby-tabs,html.ts-side.ts-home .skinHeader .sectionTabs,html.ts-side.ts-home .MuiAppBar-root .MuiTabs-root,html.ts-side.ts-home .skinHeader .tabs-viewmenubar,html.ts-side.ts-home .skinHeader [role=tablist],html.ts-side.ts-home .MuiAppBar-root [role=tablist]{display:none!important}',
+    'html.ts-side .skinHeader .emby-tabs-slider{padding:2px!important}',
+    'html.ts-side .skinHeader .emby-tab-button{font-size:.92em!important;padding:.45em 1.1em!important}',
     'html.ts-side .skinHeader .headerLeft>:not(.headerBackButton),html.ts-side .skinHeader .pageTitle,html.ts-side .MuiAppBar-root a[href="#/home"],html.ts-side .MuiAppBar-root a[href="#/"],html.ts-side .skinHeader a[href="#/home"],html.ts-side .skinHeader a[href*="topParentId"],html.ts-side .MuiAppBar-root a[href*="topParentId"],html.ts-side .skinHeader a[href*="parentId="],html.ts-side .MuiAppBar-root a[href*="parentId="],html.ts-side .skinHeader a[href*="tab=1"],html.ts-side .MuiAppBar-root a[href*="tab=1"],html.ts-side .MuiAppBar-root a[href*="favorites"],html.ts-side .skinHeader a[href*="favorites"]{display:none!important}',
     'html.ts-side .skinHeader .headerRight button,html.ts-side .MuiAppBar-root .MuiIconButton-root,html.ts-side .MuiAppBar-root button{background:rgba(0,0,0,.35)!important;border-radius:50%!important;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);margin-left:6px}',
     'html.ts-side .mainDrawerButton,html.ts-side .headerHomeButton{display:none!important}',
@@ -1654,6 +1658,7 @@
   function sideSync() {
     var want = sideWanted();
     htmlClass().toggle('ts-side', want);
+    htmlClass().toggle('ts-home', /^home/.test(route()));
     if (!want) return;
     ensureUiCss();
     if (!side.el) {
@@ -1661,6 +1666,8 @@
       side.el.id = 'ts-side';
       side.el.setAttribute('aria-label', 'Navigation principale');
       side.el.addEventListener('click', function (e) {
+        // A mouse click must not leave the bar open through keyboard focus.
+        if (e.target.closest && e.target.closest('a') && !isTv()) setTimeout(function () { if (document.activeElement && side.el.contains(document.activeElement)) document.activeElement.blur(); }, 0);
         var b = e.target.closest ? e.target.closest('[data-search]') : null;
         if (!b) return;
         var native = document.querySelector('.headerSearchButton');
@@ -1951,6 +1958,9 @@
   }
   window.addEventListener('hashchange', function () { setTimeout(layoutSync, 30); });
   window.addEventListener('resize', function () { sideSync(); });
+  // The bar opens on keyboard focus only when the keyboard is actually used.
+  document.addEventListener('keydown', function (e) { if (e.key === 'Tab' || (e.keyCode >= 37 && e.keyCode <= 40)) htmlClass().add('ts-kbd'); }, true);
+  document.addEventListener('mousedown', function () { htmlClass().remove('ts-kbd'); }, true);
 
   // TV remote: Jellyfin's own focus navigation does not know about the side bar,
   // so arrows inside it are handled here, and Left at the page's edge opens it.
