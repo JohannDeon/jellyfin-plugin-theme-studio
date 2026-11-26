@@ -1,0 +1,12 @@
+[
+  {
+    "guid": "f5ce6c30-0794-441d-a8d8-da5f0cd72eed",
+    "name": "Theme Studio",
+    "overview": "Thèmes modernes pour Jellyfin, avec aperçu en direct et un thème par utilisateur.",
+    "description": "Theme Studio ajoute une galerie de thèmes, un éditeur visuel (couleurs, arrondis, effet verre, police, image de fond), un thème par utilisateur et l'import/export. Aucune modification manuelle : installez le plugin, redémarrez Jellyfin, c'est tout.",
+    "owner": "JohannDeon",
+    "category": "General",
+    "imageUrl": "https://raw.githubusercontent.com/JohannDeon/jellyfin-plugin-theme-studio/main/assets/thumb.png",
+    "versions": []
+  }
+]

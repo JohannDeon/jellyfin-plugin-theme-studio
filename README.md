@@ -1,3 +1,102 @@
 # Theme Studio pour Jellyfin
 
-Thèmes modernes pour Jellyfin (en cours de développement).
+Des thèmes modernes pour Jellyfin, avec **aperçu en direct**, **un thème par utilisateur** et un **éditeur visuel**.
+Pensé comme un successeur plus pratique de Skin Manager.
+
+![Galerie de thèmes](assets/screenshot-gallery.png)
+
+## Installation (une seule étape)
+
+1. Dans Jellyfin : **Tableau de bord → Extensions → Dépôts → +**, puis colle cette adresse :
+   ```
+   https://raw.githubusercontent.com/JohannDeon/jellyfin-plugin-theme-studio/main/manifest.json
+   ```
+2. Dans le **Catalogue**, installe **Theme Studio**, puis redémarre Jellyfin.
+
+C'est tout. Il n'y a aucun fichier à modifier, pas de CSS à coller, et aucun autre plugin à installer.
+Un bouton palette apparaît dans la barre du haut de l'interface web.
+
+> Version de Jellyfin requise : 12.0 ou plus récente.
+
+## Ce que ça fait
+
+| | Skin Manager | Theme Studio |
+|---|---|---|
+| Aperçu | Captures d'écran | **En direct**, sur ta vraie bibliothèque |
+| Qui choisit le thème | L'admin, pour tout le monde | L'admin fixe le thème par défaut, **chaque utilisateur peut choisir le sien** |
+| Ton CSS personnalisé | Écrasé à chaque changement | **Conservé** (CSS admin + CSS perso par utilisateur) |
+| Personnalisation | Options propres à chaque skin | **Éditeur unique** : couleurs, arrondis, effet verre, police, image de fond |
+| Thèmes chargés depuis Internet | Oui (problèmes de CSP derrière un reverse proxy) | **Non**, tout est servi par ton serveur |
+| Partage | Non | **Import / export** d'un thème en un fichier |
+| Page de connexion | Thème global | Thème par défaut du serveur |
+
+### Pour chaque utilisateur
+- Clique sur l'icône **palette** en haut à droite.
+- **Galerie** : choisis un thème, l'interface change immédiatement.
+- **Personnaliser** : couleur d'accent, fond, panneaux, texte, arrondi des coins, effet verre, police et image de fond.
+- **CSS** : ton CSS perso, visible uniquement pour toi.
+- **Partager** : exporte ou importe un thème.
+- **Enregistrer** garde ton choix sur le serveur, il te suit donc sur tous tes appareils. **Annuler** remet l'ancien thème.
+
+![Personnalisation](assets/screenshot-customize.png)
+
+### Pour l'administrateur
+**Tableau de bord → Theme Studio** (ou **Extensions → Theme Studio**) :
+- thème par défaut du serveur (page de connexion comprise) avec le même éditeur en direct ;
+- autoriser ou non les utilisateurs à choisir leur thème, afficher ou non le bouton palette ;
+- créer des thèmes personnalisés et les proposer à tout le monde, importer des thèmes ;
+- un diagnostic indique si l'injection dans l'interface web fonctionne.
+
+![Réglages admin](assets/screenshot-admin.png)
+
+## Thèmes inclus
+
+Jellyfin (d'origine), Minuit, Noir OLED, Aurore, Braise, Océan, Rosé, Ardoise.
+
+## Comment ça marche
+
+- Au démarrage, le plugin ajoute un petit middleware qui insère `ThemeStudio/default.css` et `ThemeStudio/client.js`
+  dans la page `index.html` de Jellyfin Web **au moment où elle est envoyée**. Rien n'est écrit sur le disque,
+  donc ça fonctionne aussi avec Docker et les installations en lecture seule. Le chemin de base (`/jellyfin`, etc.) est géré.
+- Un thème est un ensemble de variables (`--ts-accent`, `--ts-bg`, `--ts-radius`…) appliquées à l'interface par
+  `engine.css`, plus du CSS optionnel.
+- Les choix des utilisateurs sont stockés dans `plugins/configurations/ThemeStudio/users/<id>.json` (ils survivent aux mises à jour du plugin).
+- Les applis qui utilisent l'interface web du serveur (navigateur, Jellyfin Media Player, appli Android) ont le thème.
+  Les applis natives (Android TV, Swiftfin, Roku…) ne l'affichent pas.
+
+### API
+| Méthode | Route | Accès |
+|---|---|---|
+| GET | `/ThemeStudio/client.js`, `/ThemeStudio/engine.css`, `/ThemeStudio/default.css` | public |
+| GET | `/ThemeStudio/Bootstrap` | utilisateur connecté |
+| PUT / DELETE | `/ThemeStudio/Me` | utilisateur connecté |
+| GET / PUT | `/ThemeStudio/Admin` | administrateur |
+
+## Format d'un thème exporté
+
+```json
+{
+  "format": "theme-studio",
+  "version": 1,
+  "name": "Mon thème",
+  "tokens": {
+    "accent": "#8b5cf6", "background": "#0b1020", "surface": "#151b30",
+    "text": "#eef1ff", "textSecondary": "#9aa3c7",
+    "radius": 14, "blur": 18, "font": "system-ui",
+    "backgroundImage": "https://…", "backgroundDim": 70
+  },
+  "css": "/* optionnel */"
+}
+```
+
+## Développement
+
+```sh
+dotnet test                     # tests (.NET 10)
+dotnet publish src/Jellyfin.Plugin.ThemeStudio -c Release -o out
+```
+Copie `out/Jellyfin.Plugin.ThemeStudio.dll` dans `plugins/ThemeStudio/` puis redémarre Jellyfin.
+
+### Publier une version
+Augmente `<AssemblyVersion>` dans `src/Jellyfin.Plugin.ThemeStudio/Jellyfin.Plugin.ThemeStudio.csproj` et fusionne dans `main`.
+Le workflow **Release** compile le plugin, crée la release GitHub et met à jour `manifest.json` automatiquement.
