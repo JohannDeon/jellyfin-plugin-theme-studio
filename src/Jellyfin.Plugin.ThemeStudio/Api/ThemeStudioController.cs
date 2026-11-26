@@ -72,6 +72,7 @@ public class ThemeStudioController : ControllerBase
             ShowHomeHero = settings.ShowHomeHero,
             HomeHeroSource = settings.HomeHeroSource,
             HomeHeroTrailers = settings.HomeHeroTrailers,
+            ModernLayout = settings.ModernLayout,
             IsAdmin = User.IsInRole("Administrator"),
             Version = typeof(Plugin).Assembly.GetName().Version?.ToString() ?? "0",
         });
@@ -185,6 +186,8 @@ public sealed class BootstrapResponse
     public string HomeHeroSource { get; set; } = "mixed";
 
     public bool HomeHeroTrailers { get; set; } = true;
+
+    public bool ModernLayout { get; set; } = true;
 
     public bool IsAdmin { get; set; }
 

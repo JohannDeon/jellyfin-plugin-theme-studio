@@ -35,6 +35,7 @@ public class ThemeStore
             ShowHomeHero = config.ShowHomeHero,
             HomeHeroSource = NormalizeHeroSource(config.HomeHeroSource),
             HomeHeroTrailers = config.HomeHeroTrailers,
+            ModernLayout = config.ModernLayout,
             DefaultSelection = ThemeJson.TryDeserialize<ThemeSelection>(config.DefaultSelectionJson) ?? new ThemeSelection(),
             CustomThemes = ThemeJson.TryDeserialize<List<ThemeDefinition>>(config.CustomThemesJson) ?? new List<ThemeDefinition>(),
         };
@@ -49,6 +50,7 @@ public class ThemeStore
         config.ShowHomeHero = settings.ShowHomeHero;
         config.HomeHeroSource = NormalizeHeroSource(settings.HomeHeroSource);
         config.HomeHeroTrailers = settings.HomeHeroTrailers;
+        config.ModernLayout = settings.ModernLayout;
         config.DefaultSelectionJson = ThemeJson.Serialize(settings.DefaultSelection ?? new ThemeSelection());
         var custom = (settings.CustomThemes ?? new List<ThemeDefinition>())
             .Select(t =>
@@ -126,6 +128,9 @@ public sealed class ServerSettings
 
     /// <summary>Gets or sets a value indicating whether muted YouTube trailers play in the banner.</summary>
     public bool HomeHeroTrailers { get; set; } = true;
+
+    /// <summary>Gets or sets a value indicating whether the streaming layout (side bar, detail pages) is used.</summary>
+    public bool ModernLayout { get; set; } = true;
 
     public ThemeSelection? DefaultSelection { get; set; } = new();
 
