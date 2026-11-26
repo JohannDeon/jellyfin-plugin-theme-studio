@@ -781,7 +781,9 @@
         container.innerHTML = '';
         var host = document.createElement('div');
         container.appendChild(host);
+        if (!data || !data.settings || !data.builtInThemes) throw new Error('réponse inattendue du serveur');
         var settings = data.settings;
+        settings.defaultSelection = settings.defaultSelection || { themeId: 'jellyfin' };
         var themes = data.builtInThemes.concat((settings.customThemes || []).map(function (t) { t.source = 'custom'; return t; }));
         state.previewing = true;
         if (state.boot) state.boot.themes = themes;

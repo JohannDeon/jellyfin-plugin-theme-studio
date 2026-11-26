@@ -58,11 +58,11 @@ public class ThemeStudioController : ControllerBase
     [HttpGet("Bootstrap")]
     [Authorize]
     [Produces(MediaTypeNames.Application.Json)]
-    public async Task<ActionResult<BootstrapResponse>> GetBootstrap()
+    public async Task<ActionResult> GetBootstrap()
     {
         var userId = await GetUserIdAsync().ConfigureAwait(false);
         var settings = Store.GetServerSettings();
-        return new BootstrapResponse
+        return Json(new BootstrapResponse
         {
             Themes = ThemeCatalog.All(settings.CustomThemes),
             DefaultSelection = settings.DefaultSelection ?? new ThemeSelection(),
@@ -71,15 +71,21 @@ public class ThemeStudioController : ControllerBase
             ShowHeaderButton = settings.ShowHeaderButton,
             IsAdmin = User.IsInRole("Administrator"),
             Version = typeof(Plugin).Assembly.GetName().Version?.ToString() ?? "0",
-        };
+        });
     }
 
     /// <summary>Saves the current user's theme.</summary>
     [HttpPut("Me")]
     [Authorize]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    public async Task<ActionResult> SaveMine([FromBody] ThemeSelection selection)
+    public async Task<ActionResult> SaveMine()
     {
+        var selection = await ReadBodyAsync<ThemeSelection>().ConfigureAwait(false);
+        if (selection is null)
+        {
+            return BadRequest();
+        }
+
         if (!Store.GetServerSettings().AllowUserThemes)
         {
             return Forbid();
@@ -115,22 +121,41 @@ public class ThemeStudioController : ControllerBase
     [HttpGet("Admin")]
     [Authorize(Policy = ElevationPolicy)]
     [Produces(MediaTypeNames.Application.Json)]
-    public ActionResult<AdminResponse> GetAdmin()
-        => new AdminResponse
+    public ActionResult GetAdmin()
+        => Json(new AdminResponse
         {
             Settings = Store.GetServerSettings(),
             BuiltInThemes = ThemeCatalog.BuiltIn,
             LastInjection = IndexHtmlInjectionMiddleware.LastInjection,
-        };
+        });
 
     /// <summary>Saves the server settings.</summary>
     [HttpPut("Admin")]
     [Authorize(Policy = ElevationPolicy)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    public ActionResult SaveAdmin([FromBody] ServerSettings settings)
+    public async Task<ActionResult> SaveAdmin()
     {
+        var settings = await ReadBodyAsync<ServerSettings>().ConfigureAwait(false);
+        if (settings is null)
+        {
+            return BadRequest();
+        }
+
         Store.SaveServerSettings(settings);
         return NoContent();
+    }
+
+    // Jellyfin's MVC JSON settings use PascalCase; the client speaks camelCase,
+    // so this API serializes and parses its own JSON with ThemeJson.Options.
+    private ContentResult Json<T>(T value)
+        => Content(ThemeJson.Serialize(value), MediaTypeNames.Application.Json);
+
+    private async Task<T?> ReadBodyAsync<T>()
+        where T : class
+    {
+        using var reader = new StreamReader(Request.Body);
+        var body = await reader.ReadToEndAsync().ConfigureAwait(false);
+        return ThemeJson.TryDeserialize<T>(body);
     }
 
     private async Task<Guid> GetUserIdAsync()
