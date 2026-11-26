@@ -61,6 +61,20 @@ public class ThemeTests
     }
 
     [Fact]
+    public void ApiJsonIsCamelCaseAndParsesAnyCase()
+    {
+        // Jellyfin's own MVC JSON is PascalCase; the client expects camelCase (bug in 1.0.0).
+        var json = ThemeJson.Serialize(new Api.AdminResponse { BuiltInThemes = ThemeCatalog.BuiltIn });
+        Assert.Contains("\"builtInThemes\":[", json, StringComparison.Ordinal);
+        Assert.Contains("\"settings\":{\"allowUserThemes\":true", json, StringComparison.Ordinal);
+        Assert.DoesNotContain("\"BuiltInThemes\"", json, StringComparison.Ordinal);
+
+        var parsed = ThemeJson.TryDeserialize<ServerSettings>("{\"AllowUserThemes\":false,\"defaultSelection\":{\"themeId\":\"oled\"}}");
+        Assert.False(parsed!.AllowUserThemes);
+        Assert.Equal("oled", parsed.DefaultSelection!.ThemeId);
+    }
+
+    [Fact]
     public void UnknownThemeFallsBackToStock()
         => Assert.Equal("jellyfin", ThemeCatalog.Find(ThemeCatalog.BuiltIn, "nope").Id);
 
