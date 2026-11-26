@@ -74,6 +74,24 @@ public class ThemeTests
         Assert.Equal("oled", parsed.DefaultSelection!.ThemeId);
     }
 
+    [Theory]
+    [InlineData("resume", "resume")]
+    [InlineData("latest", "latest")]
+    [InlineData("mixed", "mixed")]
+    [InlineData(null, "mixed")]
+    [InlineData("<script>", "mixed")]
+    public void NormalizesHeroSource(string? input, string expected)
+        => Assert.Equal(expected, ThemeStore.NormalizeHeroSource(input));
+
+    [Fact]
+    public void HomeHeroChoiceRoundTrips()
+    {
+        var json = ThemeJson.Serialize(new ThemeSelection { ThemeId = "oled", HomeHero = false });
+        Assert.Contains("\"homeHero\":false", json, StringComparison.Ordinal);
+        Assert.False(ThemeJson.TryDeserialize<ThemeSelection>(json)!.HomeHero);
+        Assert.Null(ThemeJson.TryDeserialize<ThemeSelection>("{\"themeId\":\"oled\"}")!.HomeHero);
+    }
+
     [Fact]
     public void UnknownThemeFallsBackToStock()
         => Assert.Equal("jellyfin", ThemeCatalog.Find(ThemeCatalog.BuiltIn, "nope").Id);
