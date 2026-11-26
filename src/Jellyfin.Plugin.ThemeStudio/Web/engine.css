@@ -169,3 +169,96 @@ a:not(.emby-button):not(.cardImageContainer):not(.navMenuOption), .button-link {
 * { scrollbar-color: color-mix(in srgb, var(--ts-text) 25%, transparent) transparent; }
 ::-webkit-scrollbar-thumb { background: color-mix(in srgb, var(--ts-text) 25%, transparent); border-radius: 999px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--ts-accent); }
+
+/* ======================= Modern streaming look (v1.2) ======================= */
+
+/* Section titles: bigger, bolder, with an accent chevron (Netflix / Apple TV) */
+.sectionTitle, .sectionTitle-cards {
+  font-weight: 700 !important;
+  letter-spacing: -0.01em;
+  font-size: 1.32em !important;
+}
+.sectionTitleTextButton .material-icons, .sectionTitleContainer .chevron_right {
+  color: var(--ts-accent) !important;
+  transition: transform .2s ease;
+}
+.sectionTitleTextButton:hover .material-icons { transform: translateX(4px); }
+
+/* Cards: soft lift + glow on hover (Disney+ / Prime), only with a real mouse */
+.cardScalable {
+  transition: transform .28s cubic-bezier(.2, .8, .2, 1), box-shadow .28s ease;
+  will-change: transform;
+}
+@media (hover: hover) and (pointer: fine) {
+  .card:hover .cardScalable {
+    transform: translateY(-4px) scale(1.035);
+    box-shadow: 0 16px 34px rgba(0, 0, 0, .5), 0 0 0 2px color-mix(in srgb, var(--ts-accent) 55%, transparent);
+    border-radius: var(--ts-radius);
+    z-index: 2;
+  }
+  .card:hover .cardText-first { color: var(--ts-text) !important; }
+}
+.cardImageContainer { box-shadow: 0 4px 14px rgba(0, 0, 0, .28); }
+.cardText-first { font-weight: 600; }
+.cardOverlayButton, .cardOverlayFab-primary {
+  background: color-mix(in srgb, var(--ts-accent) 85%, transparent) !important;
+  color: var(--ts-bg) !important;
+  border-radius: 999px !important;
+}
+
+/* Progress bars: slim, rounded, accent (Netflix) */
+.itemProgressBar { height: 4px !important; }
+.itemProgressBarForeground { border-radius: 999px; }
+
+/* Rows: a little more air */
+.verticalSection { margin-bottom: .6em; }
+.homeSectionsContainer .verticalSection, .genreCollectionsSection { margin-top: .3em; }
+
+/* Item details: cinematic header */
+.detailImageContainer .cardImageContainer, .detailImageContainer .card {
+  border-radius: var(--ts-radius) !important;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, .55);
+}
+.itemName.infoText, .parentNameLast, .itemName {
+  font-weight: 800 !important;
+  letter-spacing: -0.02em;
+}
+.detailLogo { filter: drop-shadow(0 6px 24px rgba(0, 0, 0, .55)); }
+.mainDetailButtons .detailButton {
+  border-radius: 999px !important;
+  min-width: 3em;
+  min-height: 3em;
+}
+.mainDetailButtons .btnPlay.detailButton, .mainDetailButtons .btnResume.detailButton {
+  background: var(--ts-text) !important;
+  color: var(--ts-bg) !important;
+}
+.genres a, .itemGenres a, .itemTags a {
+  display: inline-block;
+  padding: .1em .65em;
+  margin: .15em .2em .15em 0;
+  border-radius: 999px;
+  border: 1px solid var(--ts-border);
+  background: color-mix(in srgb, var(--ts-text) 6%, transparent);
+  color: var(--ts-text) !important;
+  text-decoration: none !important;
+}
+.genres a:hover, .itemGenres a:hover, .itemTags a:hover { border-color: var(--ts-accent); color: var(--ts-accent) !important; }
+
+/* Episodes list: card-like rows */
+.listItem.listItem-largeImage, .episodeContainer .listItem {
+  border-radius: var(--ts-radius) !important;
+  padding: .6em !important;
+  transition: background .2s ease;
+}
+.listItemImage.listItemImage-large { border-radius: var(--ts-radius-sm) !important; overflow: hidden; }
+
+/* Video player OSD: cleaner, glassy */
+.videoOsdBottom .osdControls .btnPause, .videoOsdBottom .osdControls .btnPlay { color: var(--ts-accent) !important; }
+.osdPoster img, .osdPoster .cardImageContainer { border-radius: var(--ts-radius-sm) !important; }
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .cardScalable, .sectionTitleTextButton .material-icons { transition: none !important; }
+  .card:hover .cardScalable { transform: none !important; }
+}

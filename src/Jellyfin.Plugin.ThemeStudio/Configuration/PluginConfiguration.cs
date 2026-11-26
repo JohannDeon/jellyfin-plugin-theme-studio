@@ -20,6 +20,9 @@ public class PluginConfiguration : BasePluginConfiguration
     /// <summary>Gets or sets what the banner shows: "mixed", "resume" or "latest".</summary>
     public string HomeHeroSource { get; set; } = "mixed";
 
+    /// <summary>Gets or sets a value indicating whether muted trailers play in the banner.</summary>
+    public bool HomeHeroTrailers { get; set; } = true;
+
     /// <summary>Gets or sets the default selection (theme + overrides + CSS) as JSON.</summary>
     public string DefaultSelectionJson { get; set; } = string.Empty;
 
