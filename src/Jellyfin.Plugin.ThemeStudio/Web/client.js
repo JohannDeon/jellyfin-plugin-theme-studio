@@ -1464,6 +1464,10 @@
     '.tss-a.on{background:rgba(255,255,255,.12);color:var(--ts-text,#fff)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.08)}',
     '.tss-a.on svg{color:var(--ts-accent,#00a4dc)}',
     '.tss-a:focus-visible,.tss-search:focus-visible{outline:2px solid var(--ts-accent,#00a4dc);outline-offset:2px}',
+    /* TV: opaque (no blur on TV browsers), big focus highlight for the remote */
+    'html.layout-tv.ts-side #ts-side{background:rgb(var(--ts-surface-rgb,24,24,24))}',
+    'html.layout-tv .tss-a:focus,html.layout-tv .tss-search:focus,html.layout-tv .tss-brand:focus{background:var(--ts-accent,#00a4dc)!important;color:#fff!important;outline:0}',
+    'html.layout-tv .tss-a:focus svg{color:#fff}',
     '.tss-foot{margin-top:auto;padding-top:14px;border-top:1px solid rgba(255,255,255,.08)}',
     /* home: posters with the title on the image */
     'html.ts-modern #indexPage .portraitCard .cardBox,html.ts-modern .genreCollectionsSections .portraitCard .cardBox{position:relative}',
@@ -1576,7 +1580,7 @@
   var side = { el: null, views: null, uid: null, loading: false };
 
   function sideWanted() {
-    if (!layoutEnabled() || isTv() || htmlClass().contains('layout-mobile')) return false;
+    if (!layoutEnabled() || htmlClass().contains('layout-mobile')) return false;
     if ((window.innerWidth || 0) < 1000) return false;
     if (/^(dashboard|configurationpage|login|selectserver|addserver|forgotpassword|wizard|startup|video|queue|nowplaying)/i.test(route())) return false;
     return !!document.querySelector('.skinHeader');
@@ -1945,6 +1949,45 @@
   }
   window.addEventListener('hashchange', function () { setTimeout(layoutSync, 30); });
   window.addEventListener('resize', function () { sideSync(); });
+
+  // TV remote: Jellyfin's own focus navigation does not know about the side bar,
+  // so arrows inside it are handled here, and Left at the page's edge opens it.
+  function sideFocusables() {
+    return side.el ? Array.prototype.slice.call(side.el.querySelectorAll('a[href], button')) : [];
+  }
+  function focusPage() {
+    var page = document.querySelector('.page:not(.hide)');
+    var cands = (hero.el && hero.el.offsetParent ? Array.prototype.slice.call(hero.el.querySelectorAll('.tsh-slide.on .tsh-play')) : [])
+      .concat(page ? Array.prototype.slice.call(page.querySelectorAll('.card, button:not(.hide), a[href]')) : []);
+    for (var k = 0; k < cands.length; k++) {
+      var r = cands[k].getBoundingClientRect();
+      if (r.width && r.height && r.bottom > 0 && r.top < window.innerHeight) { cands[k].focus(); return; }
+    }
+  }
+  window.addEventListener('keydown', function (e) {
+    if (!htmlClass().contains('ts-side') || !side.el) return;
+    var k = e.keyCode;
+    if (k < 37 || k > 40) return;
+    var active = document.activeElement;
+    if (side.el.contains(active)) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (k === 39) { active.blur(); focusPage(); return; }
+      if (k === 37) return;
+      var list = sideFocusables();
+      var i = list.indexOf(active) + (k === 40 ? 1 : -1);
+      if (i >= 0 && i < list.length) list[i].focus();
+      return;
+    }
+    if (k === 37 && isTv()) {
+      // If Jellyfin did not move focus (nothing more to the left), go to the side bar.
+      setTimeout(function () {
+        if (document.activeElement !== active) return;
+        var on = side.el.querySelector('.tss-a.on') || sideFocusables()[0];
+        if (on) on.focus();
+      }, 80);
+    }
+  }, true);
 
 
   window.ThemeStudio = {
