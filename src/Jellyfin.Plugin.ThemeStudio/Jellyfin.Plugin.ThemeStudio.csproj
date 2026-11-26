@@ -5,7 +5,7 @@
     <TargetFrameworks>net9.0;net10.0</TargetFrameworks>
     <RootNamespace>Jellyfin.Plugin.ThemeStudio</RootNamespace>
     <!-- Plugin version. The 4th number tells the builds apart (11 = Jellyfin 10.11, 12 = Jellyfin 12) -->
-    <PluginVersion>1.4.4</PluginVersion>
+    <PluginVersion>1.4.5</PluginVersion>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
